@@ -1,8 +1,12 @@
 [package]
-name = "sentencepiece"
+name = "sentencepiece-sys"
 version = "0.1.0"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 
 [dependencies]
-sentencepiece-sys = { path = "sentencepiece-sys" }
+
+[build-dependencies]
+bindgen = "0.52"
+cc = "1"
+pkg-config = "0.3"
