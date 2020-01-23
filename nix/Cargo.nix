@@ -72,6 +72,752 @@ rec {
   #   inject test dependencies into the build
 
   crates = {
+    "aho-corasick 0.7.6 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "aho-corasick";
+        version = "0.7.6";
+        edition = "2015";
+        sha256 = "0b8dh20fhdc59dhhnfi89n2bi80a8zbagzd5c122hf1vv2amxysq";
+        libName = "aho_corasick";
+        authors = [
+          "Andrew Gallant <jamslam@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "memchr";
+            packageId = "memchr 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+        ];
+        features = {
+          "default" = [ "std" ];
+          "std" = [ "memchr/use_std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
+      };
+    "ansi_term 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "ansi_term";
+        version = "0.11.0";
+        edition = "2015";
+        sha256 = "16wpvrghvd0353584i1idnsgm0r3vchg8fyrm0x8ayv1rgvbljgf";
+        authors = [
+          "ogham@bsago.me"
+          "Ryan Scheel (Havvy) <ryan.havvy@gmail.com>"
+          "Josh Triplett <josh@joshtriplett.org>"
+        ];
+        dependencies = [
+          {
+            name = "winapi";
+            packageId = "winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: (target."os" == "windows");
+            features = [ "errhandlingapi" "consoleapi" "processenv" ];
+          }
+        ];
+        features = {
+        };
+      };
+    "atty 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "atty";
+        version = "0.2.14";
+        edition = "2015";
+        sha256 = "1s7yslcs6a28c5vz7jwj63lkfgyx8mx99fdirlhi9lbhhzhrpcyr";
+        authors = [
+          "softprops <d.tangren@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "hermit-abi";
+            packageId = "hermit-abi 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: (target."os" == "hermit");
+          }
+          {
+            name = "libc";
+            packageId = "libc 0.2.66 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+            target = {target, features}: target."unix";
+          }
+          {
+            name = "winapi";
+            packageId = "winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: target."windows";
+            features = [ "consoleapi" "processenv" "minwinbase" "minwindef" "winbase" ];
+          }
+        ];
+        features = {
+        };
+      };
+    "bindgen 0.52.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "bindgen";
+        version = "0.52.0";
+        edition = "2015";
+        # Hack to suppress building binaries
+        crateBin = [{name = ","; path = ",";}];
+        sha256 = "0mzy2gjiaggl602yn4a11xzrxfj18kl7pwqa5yv32njkxd257j7i";
+        authors = [
+          "Jyun-Yan You <jyyou.tw@gmail.com>"
+          "Emilio Cobos Álvarez <emilio@crisal.io>"
+          "Nick Fitzgerald <fitzgen@gmail.com>"
+          "The Servo project developers"
+        ];
+        dependencies = [
+          {
+            name = "bitflags";
+            packageId = "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "cexpr";
+            packageId = "cexpr 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "cfg-if";
+            packageId = "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "clang-sys";
+            packageId = "clang-sys 0.28.1 (registry+https://github.com/rust-lang/crates.io-index)";
+            features = [ "clang_6_0" ];
+          }
+          {
+            name = "clap";
+            packageId = "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "env_logger";
+            packageId = "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "lazy_static";
+            packageId = "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "lazycell";
+            packageId = "lazycell 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "log";
+            packageId = "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "peeking_take_while";
+            packageId = "peeking_take_while 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "proc-macro2";
+            packageId = "proc-macro2 1.0.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "quote";
+            packageId = "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "regex";
+            packageId = "regex 1.3.3 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+            features = [ "std" "unicode" ];
+          }
+          {
+            name = "rustc-hash";
+            packageId = "rustc-hash 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "shlex";
+            packageId = "shlex 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "which";
+            packageId = "which 3.1.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+            usesDefaultFeatures = false;
+          }
+        ];
+        devDependencies = [
+          {
+            name = "clap";
+            packageId = "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "shlex";
+            packageId = "shlex 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "default" = [ "logging" "clap" "runtime" "which-rustfmt" ];
+          "logging" = [ "env_logger" "log" ];
+          "runtime" = [ "clang-sys/runtime" ];
+          "static" = [ "clang-sys/static" ];
+          "which-rustfmt" = [ "which" ];
+        };
+        resolvedDefaultFeatures = [ "clap" "default" "env_logger" "log" "logging" "runtime" "which" "which-rustfmt" ];
+      };
+    "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "bitflags";
+        version = "1.2.1";
+        edition = "2015";
+        sha256 = "14qnd5nq8p2almk79m4m8ydqhd413yaxsyjp5xd19g3mikzf47fg";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        features = {
+        };
+        resolvedDefaultFeatures = [ "default" ];
+      };
+    "byteorder 1.3.2 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "byteorder";
+        version = "1.3.2";
+        edition = "2015";
+        sha256 = "1xbwjlmq2ziqjmjvkqxdx1yh136xxhilxd40bky1w4d7hn4xvhx7";
+        authors = [
+          "Andrew Gallant <jamslam@gmail.com>"
+        ];
+        features = {
+          "default" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
+      };
+    "cc 1.0.50 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "cc";
+        version = "1.0.50";
+        edition = "2018";
+        # Hack to suppress building binaries
+        crateBin = [{name = ","; path = ",";}];
+        sha256 = "1kdqm8ka7xg9h56b694pcz29ka33fsz27mzrphqc78gx96h8zqlm";
+        authors = [
+          "Alex Crichton <alex@alexcrichton.com>"
+        ];
+        features = {
+          "parallel" = [ "jobserver" ];
+        };
+      };
+    "cexpr 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "cexpr";
+        version = "0.3.6";
+        edition = "2015";
+        sha256 = "07fdfj4ff2974y33yixrb657riq9zl9b9h9lr0h7ridhhvxvbrgw";
+        authors = [
+          "Jethro Beekman <jethro@jbeekman.nl>"
+        ];
+        dependencies = [
+          {
+            name = "nom";
+            packageId = "nom 4.2.3 (registry+https://github.com/rust-lang/crates.io-index)";
+            features = [ "verbose-errors" ];
+          }
+        ];
+        features = {
+        };
+      };
+    "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "cfg-if";
+        version = "0.1.10";
+        edition = "2018";
+        sha256 = "08h80ihs74jcyp24cd75wwabygbbdgl05k6p5dmq8akbr78vv1a7";
+        authors = [
+          "Alex Crichton <alex@alexcrichton.com>"
+        ];
+        features = {
+          "rustc-dep-of-std" = [ "core" "compiler_builtins" ];
+        };
+      };
+    "clang-sys 0.28.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "clang-sys";
+        version = "0.28.1";
+        edition = "2015";
+        sha256 = "0ls8zcqi5bmmrvrk3b6r1ym4wlivinbv590d2dvg2xn9f44mbpl1";
+        authors = [
+          "Kyle Mayes <kyle@mayeses.com>"
+        ];
+        dependencies = [
+          {
+            name = "glob";
+            packageId = "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "libc";
+            packageId = "libc 0.2.66 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "libloading";
+            packageId = "libloading 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+        ];
+        buildDependencies = [
+          {
+            name = "glob";
+            packageId = "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "clang_3_6" = [ "gte_clang_3_6" ];
+          "clang_3_7" = [ "gte_clang_3_6" "gte_clang_3_7" ];
+          "clang_3_8" = [ "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" ];
+          "clang_3_9" = [ "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" "gte_clang_3_9" ];
+          "clang_4_0" = [ "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" "gte_clang_3_9" "gte_clang_4_0" ];
+          "clang_5_0" = [ "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" "gte_clang_3_9" "gte_clang_4_0" "gte_clang_5_0" ];
+          "clang_6_0" = [ "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" "gte_clang_3_9" "gte_clang_4_0" "gte_clang_5_0" "gte_clang_6_0" ];
+          "clang_7_0" = [ "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" "gte_clang_3_9" "gte_clang_4_0" "gte_clang_5_0" "gte_clang_6_0" "gte_clang_7_0" ];
+          "clang_8_0" = [ "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" "gte_clang_3_9" "gte_clang_4_0" "gte_clang_5_0" "gte_clang_6_0" "gte_clang_7_0" "gte_clang_8_0" ];
+          "runtime" = [ "libloading" ];
+        };
+        resolvedDefaultFeatures = [ "clang_6_0" "gte_clang_3_6" "gte_clang_3_7" "gte_clang_3_8" "gte_clang_3_9" "gte_clang_4_0" "gte_clang_5_0" "gte_clang_6_0" "libloading" "runtime" ];
+      };
+    "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "clap";
+        version = "2.33.0";
+        edition = "2015";
+        sha256 = "1nf6ld3bims1n5vfzhkvcb55pdzh04bbhzf8nil5vvw05nxzarsh";
+        authors = [
+          "Kevin K. <kbknapp@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "ansi_term";
+            packageId = "ansi_term 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+            target = {target, features}: (!target."windows");
+          }
+          {
+            name = "atty";
+            packageId = "atty 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "bitflags";
+            packageId = "bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "strsim";
+            packageId = "strsim 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "textwrap";
+            packageId = "textwrap 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "unicode-width";
+            packageId = "unicode-width 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "vec_map";
+            packageId = "vec_map 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+        ];
+        features = {
+          "color" = [ "ansi_term" "atty" ];
+          "default" = [ "suggestions" "color" "vec_map" ];
+          "doc" = [ "yaml" ];
+          "lints" = [ "clippy" ];
+          "suggestions" = [ "strsim" ];
+          "wrap_help" = [ "term_size" "textwrap/term_size" ];
+          "yaml" = [ "yaml-rust" ];
+        };
+        resolvedDefaultFeatures = [ "ansi_term" "atty" "color" "default" "strsim" "suggestions" "vec_map" ];
+      };
+    "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "env_logger";
+        version = "0.7.1";
+        edition = "2018";
+        sha256 = "0djx8h8xfib43g5w94r1m1mkky5spcw4wblzgnhiyg5vnfxknls4";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        dependencies = [
+          {
+            name = "atty";
+            packageId = "atty 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "humantime";
+            packageId = "humantime 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "log";
+            packageId = "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            features = [ "std" ];
+          }
+          {
+            name = "regex";
+            packageId = "regex 1.3.3 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "termcolor";
+            packageId = "termcolor 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+        ];
+        features = {
+          "default" = [ "termcolor" "atty" "humantime" "regex" ];
+        };
+        resolvedDefaultFeatures = [ "atty" "default" "humantime" "regex" "termcolor" ];
+      };
+    "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "glob";
+        version = "0.3.0";
+        edition = "2015";
+        sha256 = "0x25wfr7vg3mzxc9x05dcphvd3nwlcmbnxrvwcvrrdwplcrrk4cv";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        features = {
+        };
+      };
+    "hermit-abi 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "hermit-abi";
+        version = "0.1.6";
+        edition = "2015";
+        sha256 = "0wippj5nkw9q5yyyaqpdrgdhag3l3nbrwja7149cwn7ii1nnbwpg";
+        authors = [
+          "Stefan Lankes"
+        ];
+        dependencies = [
+          {
+            name = "libc";
+            packageId = "libc 0.2.66 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+        ];
+        features = {
+          "rustc-dep-of-std" = [ "core" "compiler_builtins/rustc-dep-of-std" "libc/rustc-dep-of-std" ];
+        };
+        resolvedDefaultFeatures = [ "default" ];
+      };
+    "humantime 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "humantime";
+        version = "1.3.0";
+        edition = "2015";
+        sha256 = "0krwgbf35pd46xvkqg14j070vircsndabahahlv3rwhflpy4q06z";
+        authors = [
+          "Paul Colomiets <paul@colomiets.name>"
+        ];
+        dependencies = [
+          {
+            name = "quick-error";
+            packageId = "quick-error 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+        };
+      };
+    "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "lazy_static";
+        version = "1.4.0";
+        edition = "2015";
+        sha256 = "0in6ikhw8mgl33wjv6q6xfrb5b9jr16q8ygjy803fay4zcisvaz2";
+        authors = [
+          "Marvin Löbel <loebel.marvin@gmail.com>"
+        ];
+        features = {
+          "spin_no_std" = [ "spin" ];
+        };
+      };
+    "lazycell 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "lazycell";
+        version = "1.2.1";
+        edition = "2015";
+        sha256 = "0gvqycmpv7parc98i6y64ai7rvxrn1947z2a6maa02g4kvxdd55j";
+        authors = [
+          "Alex Crichton <alex@alexcrichton.com>"
+          "Nikita Pekin <contact@nikitapek.in>"
+        ];
+        features = {
+          "nightly-testing" = [ "clippy" "nightly" ];
+        };
+      };
+    "libc 0.2.66 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "libc";
+        version = "0.2.66";
+        edition = "2015";
+        sha256 = "0n0mwry21fxfwc063k33mvxk8xj7ia5ar8m42c9ymbam2ksb25fm";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        features = {
+          "default" = [ "std" ];
+          "rustc-dep-of-std" = [ "align" "rustc-std-workspace-core" ];
+          "use_std" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
+      };
+    "libloading 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "libloading";
+        version = "0.5.2";
+        edition = "2015";
+        sha256 = "0lyply8rcqc8agajzxs7bq6ivba9dnn1i68kgb9z2flnfjh13cgj";
+        authors = [
+          "Simonas Kazlauskas <libloading@kazlauskas.me>"
+        ];
+        dependencies = [
+          {
+            name = "winapi";
+            packageId = "winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: target."windows";
+            features = [ "winerror" "errhandlingapi" "libloaderapi" ];
+          }
+        ];
+        buildDependencies = [
+          {
+            name = "cc";
+            packageId = "cc 1.0.50 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+        };
+      };
+    "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "log";
+        version = "0.4.8";
+        edition = "2015";
+        sha256 = "1xz18ixccl5c6np4linv3ypc7hpmmgpc5zzd2ymp2ssfx0mhbdhl";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        dependencies = [
+          {
+            name = "cfg-if";
+            packageId = "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "kv_unstable_sval" = [ "kv_unstable" "sval/fmt" ];
+        };
+        resolvedDefaultFeatures = [ "std" ];
+      };
+    "memchr 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "memchr";
+        version = "2.3.0";
+        edition = "2015";
+        sha256 = "08r2qw1wwvvahicjj94ci05qx3ya5ixgrpbiq23kya6vgq6f55ri";
+        authors = [
+          "Andrew Gallant <jamslam@gmail.com>"
+          "bluss"
+        ];
+        features = {
+          "default" = [ "std" ];
+          "use_std" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" "use_std" ];
+      };
+    "nom 4.2.3 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "nom";
+        version = "4.2.3";
+        edition = "2015";
+        sha256 = "1mkvby8b4m61p4g1px0pwr58yfkphyp1jcfbp4qfp7l6iqdaklia";
+        authors = [
+          "contact@geoffroycouprie.com"
+        ];
+        dependencies = [
+          {
+            name = "memchr";
+            packageId = "memchr 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+        ];
+        buildDependencies = [
+          {
+            name = "version_check";
+            packageId = "version_check 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "default" = [ "std" ];
+          "regexp" = [ "regex" ];
+          "regexp_macros" = [ "regexp" "lazy_static" ];
+          "std" = [ "alloc" "memchr/use_std" ];
+          "verbose-errors" = [ "alloc" ];
+        };
+        resolvedDefaultFeatures = [ "alloc" "default" "std" "verbose-errors" ];
+      };
+    "peeking_take_while 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "peeking_take_while";
+        version = "0.1.2";
+        edition = "2015";
+        sha256 = "16bhqr6rdyrp12zv381cxaaqqd0pwysvm1q8h2ygihvypvfprc8r";
+        authors = [
+          "Nick Fitzgerald <fitzgen@gmail.com>"
+        ];
+        features = {
+        };
+      };
+    "pkg-config 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "pkg-config";
+        version = "0.3.17";
+        edition = "2015";
+        sha256 = "0xynnaxdv0gzadlw4h79j855k0q7rj4zb9xb1vk00nc6ss559nh5";
+        authors = [
+          "Alex Crichton <alex@alexcrichton.com>"
+        ];
+        features = {
+        };
+      };
+    "proc-macro2 1.0.8 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "proc-macro2";
+        version = "1.0.8";
+        edition = "2018";
+        sha256 = "0j45p176fnw0d02dzcky9sxyr4fadiggq07skmblwspqdxy33jrs";
+        authors = [
+          "Alex Crichton <alex@alexcrichton.com>"
+        ];
+        dependencies = [
+          {
+            name = "unicode-xid";
+            packageId = "unicode-xid 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "default" = [ "proc-macro" ];
+        };
+      };
+    "quick-error 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "quick-error";
+        version = "1.2.3";
+        edition = "2015";
+        sha256 = "1q6za3v78hsspisc197bg3g7rpc989qycy8ypr8ap8igv10ikl51";
+        authors = [
+          "Paul Colomiets <paul@colomiets.name>"
+          "Colin Kiegel <kiegel@gmx.de>"
+        ];
+        features = {
+        };
+      };
+    "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "quote";
+        version = "1.0.2";
+        edition = "2018";
+        sha256 = "1zkc46ryacf2jdkc6krsy2z615xbk1x8kp1830rcxz3irj5qqfh5";
+        authors = [
+          "David Tolnay <dtolnay@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "proc-macro2";
+            packageId = "proc-macro2 1.0.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+        ];
+        features = {
+          "default" = [ "proc-macro" ];
+          "proc-macro" = [ "proc-macro2/proc-macro" ];
+        };
+      };
+    "regex 1.3.3 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "regex";
+        version = "1.3.3";
+        edition = "2015";
+        sha256 = "11syqmfvbsah805z6ih8vxf8p6jssdsz1gjsjqcwprz484cqql5m";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        dependencies = [
+          {
+            name = "aho-corasick";
+            packageId = "aho-corasick 0.7.6 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "memchr";
+            packageId = "memchr 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+          {
+            name = "regex-syntax";
+            packageId = "regex-syntax 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "thread_local";
+            packageId = "thread_local 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          }
+        ];
+        features = {
+          "default" = [ "std" "perf" "unicode" ];
+          "perf" = [ "perf-cache" "perf-dfa" "perf-inline" "perf-literal" ];
+          "perf-cache" = [ "thread_local" ];
+          "perf-literal" = [ "aho-corasick" "memchr" ];
+          "unicode" = [ "unicode-age" "unicode-bool" "unicode-case" "unicode-gencat" "unicode-perl" "unicode-script" "unicode-segment" ];
+          "unicode-age" = [ "regex-syntax/unicode-age" ];
+          "unicode-bool" = [ "regex-syntax/unicode-bool" ];
+          "unicode-case" = [ "regex-syntax/unicode-case" ];
+          "unicode-gencat" = [ "regex-syntax/unicode-gencat" ];
+          "unicode-perl" = [ "regex-syntax/unicode-perl" ];
+          "unicode-script" = [ "regex-syntax/unicode-script" ];
+          "unicode-segment" = [ "regex-syntax/unicode-segment" ];
+          "unstable" = [ "pattern" ];
+          "use_std" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "aho-corasick" "default" "memchr" "perf" "perf-cache" "perf-dfa" "perf-inline" "perf-literal" "std" "thread_local" "unicode" "unicode-age" "unicode-bool" "unicode-case" "unicode-gencat" "unicode-perl" "unicode-script" "unicode-segment" ];
+      };
+    "regex-syntax 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "regex-syntax";
+        version = "0.6.13";
+        edition = "2015";
+        sha256 = "141xi6yiji0bc04c4skamd4ny9vnd1jrwc7qzfga425lyn8yhd77";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        features = {
+          "default" = [ "unicode" ];
+          "unicode" = [ "unicode-age" "unicode-bool" "unicode-case" "unicode-gencat" "unicode-perl" "unicode-script" "unicode-segment" ];
+        };
+        resolvedDefaultFeatures = [ "unicode-age" "unicode-bool" "unicode-case" "unicode-gencat" "unicode-perl" "unicode-script" "unicode-segment" ];
+      };
+    "rustc-hash 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "rustc-hash";
+        version = "1.0.1";
+        edition = "2015";
+        sha256 = "1f4cnbcmz2c3zjidqszc9c4fip37ch4xl74nkkp9dw291j5zqh3m";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        dependencies = [
+          {
+            name = "byteorder";
+            packageId = "byteorder 1.3.2 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+        };
+      };
     "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece-master)"
       = rec {
         crateName = "sentencepiece";
@@ -80,6 +826,285 @@ rec {
         src = (builtins.filterSource sourceFilter ../.);
         authors = [
           "Daniël de Kok <me@danieldk.eu>"
+        ];
+        dependencies = [
+          {
+            name = "sentencepiece-sys";
+            packageId = "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece-master/sentencepiece-sys)";
+          }
+        ];
+        features = {
+        };
+      };
+    "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece-master/sentencepiece-sys)"
+      = rec {
+        crateName = "sentencepiece-sys";
+        version = "0.1.0";
+        edition = "2018";
+        src = (builtins.filterSource sourceFilter ../sentencepiece-sys);
+        authors = [
+          "Daniël de Kok <me@danieldk.eu>"
+        ];
+        buildDependencies = [
+          {
+            name = "bindgen";
+            packageId = "bindgen 0.52.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "cc";
+            packageId = "cc 1.0.50 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "pkg-config";
+            packageId = "pkg-config 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+        };
+      };
+    "shlex 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "shlex";
+        version = "0.1.1";
+        edition = "2015";
+        sha256 = "1lmv6san7g8dv6jdfp14m7bdczq9ss7j7bgsfqyqjc3jnjfippvz";
+        authors = [
+          "comex <comexk@gmail.com>"
+        ];
+        features = {
+        };
+      };
+    "strsim 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "strsim";
+        version = "0.8.0";
+        edition = "2015";
+        sha256 = "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf";
+        authors = [
+          "Danny Guo <dannyguo91@gmail.com>"
+        ];
+        features = {
+        };
+      };
+    "termcolor 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "termcolor";
+        version = "1.1.0";
+        edition = "2018";
+        sha256 = "0pyp8vc0gx7124y80ixdl6plbfn1yjhw04i875k5fz2dk8lglsxv";
+        authors = [
+          "Andrew Gallant <jamslam@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "winapi-util";
+            packageId = "winapi-util 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: target."windows";
+          }
+        ];
+        features = {
+        };
+      };
+    "textwrap 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "textwrap";
+        version = "0.11.0";
+        edition = "2015";
+        sha256 = "0q5hky03ik3y50s9sz25r438bc4nwhqc6dqwynv4wylc807n29nk";
+        authors = [
+          "Martin Geisler <martin@geisler.net>"
+        ];
+        dependencies = [
+          {
+            name = "unicode-width";
+            packageId = "unicode-width 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+        };
+      };
+    "thread_local 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "thread_local";
+        version = "1.0.1";
+        edition = "2015";
+        sha256 = "054vlrr1vsdy1h4b7n99mr24pnj8928ig9qwzg36wnkld4dns36l";
+        authors = [
+          "Amanieu d'Antras <amanieu@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "lazy_static";
+            packageId = "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+        };
+      };
+    "unicode-width 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "unicode-width";
+        version = "0.1.7";
+        edition = "2015";
+        sha256 = "0yflmxkxmm89ckrb3sz58whn491aycrj8cxra0hzzlb72x9rvana";
+        authors = [
+          "kwantam <kwantam@gmail.com>"
+          "Manish Goregaokar <manishsmail@gmail.com>"
+        ];
+        features = {
+          "rustc-dep-of-std" = [ "std" "core" "compiler_builtins" ];
+        };
+        resolvedDefaultFeatures = [ "default" ];
+      };
+    "unicode-xid 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "unicode-xid";
+        version = "0.2.0";
+        edition = "2015";
+        sha256 = "0z09fn515xm7zyr0mmdyxa9mx2f7azcpv74pqmg611iralwpcvl2";
+        authors = [
+          "erick.tryzelaar <erick.tryzelaar@gmail.com>"
+          "kwantam <kwantam@gmail.com>"
+        ];
+        features = {
+        };
+        resolvedDefaultFeatures = [ "default" ];
+      };
+    "vec_map 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "vec_map";
+        version = "0.8.1";
+        edition = "2015";
+        sha256 = "06n8hw4hlbcz328a3gbpvmy0ma46vg1lc0r5wf55900szf3qdiq5";
+        authors = [
+          "Alex Crichton <alex@alexcrichton.com>"
+          "Jorge Aparicio <japaricious@gmail.com>"
+          "Alexis Beingessner <a.beingessner@gmail.com>"
+          "Brian Anderson <>"
+          "tbu- <>"
+          "Manish Goregaokar <>"
+          "Aaron Turon <aturon@mozilla.com>"
+          "Adolfo Ochagavía <>"
+          "Niko Matsakis <>"
+          "Steven Fackler <>"
+          "Chase Southwood <csouth3@illinois.edu>"
+          "Eduard Burtescu <>"
+          "Florian Wilkens <>"
+          "Félix Raimundo <>"
+          "Tibor Benke <>"
+          "Markus Siemens <markus@m-siemens.de>"
+          "Josh Branchaud <jbranchaud@gmail.com>"
+          "Huon Wilson <dbau.pp@gmail.com>"
+          "Corey Farwell <coref@rwell.org>"
+          "Aaron Liblong <>"
+          "Nick Cameron <nrc@ncameron.org>"
+          "Patrick Walton <pcwalton@mimiga.net>"
+          "Felix S Klock II <>"
+          "Andrew Paseltiner <apaseltiner@gmail.com>"
+          "Sean McArthur <sean.monstar@gmail.com>"
+          "Vadim Petrochenkov <>"
+        ];
+        features = {
+          "eders" = [ "serde" ];
+        };
+      };
+    "version_check 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "version_check";
+        version = "0.1.5";
+        edition = "2015";
+        sha256 = "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi";
+        authors = [
+          "Sergio Benitez <sb@sergio.bz>"
+        ];
+        features = {
+        };
+      };
+    "which 3.1.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "which";
+        version = "3.1.0";
+        edition = "2015";
+        sha256 = "1j14a331qz3dj30hm4kiyxhfvwsycigbmxql0vk056i0g1qd8xal";
+        authors = [
+          "Harry Fei <tiziyuanfang@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "libc";
+            packageId = "libc 0.2.66 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "default" = [ "failure" ];
+        };
+      };
+    "winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "winapi";
+        version = "0.3.8";
+        edition = "2015";
+        sha256 = "1ii9j9lzrhwri0902652awifzx9fpayimbp6hfhhc296xcg0k4w0";
+        authors = [
+          "Peter Atashian <retep998@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "winapi-i686-pc-windows-gnu";
+            packageId = "winapi-i686-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: (stdenv.hostPlatform.config == "i686-pc-windows-gnu");
+          }
+          {
+            name = "winapi-x86_64-pc-windows-gnu";
+            packageId = "winapi-x86_64-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: (stdenv.hostPlatform.config == "x86_64-pc-windows-gnu");
+          }
+        ];
+        features = {
+          "debug" = [ "impl-debug" ];
+        };
+        resolvedDefaultFeatures = [ "consoleapi" "errhandlingapi" "fileapi" "libloaderapi" "minwinbase" "minwindef" "processenv" "std" "winbase" "wincon" "winerror" "winnt" ];
+      };
+    "winapi-i686-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "winapi-i686-pc-windows-gnu";
+        version = "0.4.0";
+        edition = "2015";
+        sha256 = "1dmpa6mvcvzz16zg6d5vrfy4bxgg541wxrcip7cnshi06v38ffxc";
+        authors = [
+          "Peter Atashian <retep998@gmail.com>"
+        ];
+        features = {
+        };
+      };
+    "winapi-util 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "winapi-util";
+        version = "0.1.3";
+        edition = "2018";
+        sha256 = "105dq898nah3dwrzr96vvb5srp6g2v5dl5vmzf211lba9iavzksc";
+        authors = [
+          "Andrew Gallant <jamslam@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "winapi";
+            packageId = "winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            target = {target, features}: target."windows";
+            features = [ "std" "consoleapi" "errhandlingapi" "fileapi" "minwindef" "processenv" "winbase" "wincon" "winerror" "winnt" ];
+          }
+        ];
+        features = {
+        };
+      };
+    "winapi-x86_64-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "winapi-x86_64-pc-windows-gnu";
+        version = "0.4.0";
+        edition = "2015";
+        sha256 = "0gqq64czqb64kskjryj8isp62m2sgvx25yyj3kpc2myh85w24bki";
+        authors = [
+          "Peter Atashian <retep998@gmail.com>"
         ];
         features = {
         };
