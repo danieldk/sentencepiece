@@ -1,7 +1,249 @@
+//! This crate binds the
+//! [sentencepiece](https://github.com/google/sentencepiece)
+//! library. sentencepiece is an unsupervised text tokenizer.
+
+use std::ffi::{c_void, CString};
+use std::ops::{Deref, Drop};
+use std::slice;
+
+use num_derive::FromPrimitive;
+use num_traits::FromPrimitive;
+
+use sentencepiece_sys::{
+    spp_encode_as_serialized_proto, spp_free, spp_load, spp_new,
+    SentencePieceProcessor as CSentencePieceProcessor,
+};
+
+mod sentencepiece;
+use crate::sentencepiece::SentencePieceText;
+
+/// Sentence piece with its identifier and string span.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PieceWithId {
+    /// The sentence piece as a string.
+    pub piece: String,
+
+    /// The vocabulary identifier of the sentence piece.
+    pub id: u32,
+
+    /// The span of the sentence piece in the tokenized string.
+    ///
+    /// The span is encoded as the byte offsets *[begin, end)*.
+    pub span: (u32, u32),
+}
+
+/// Errors that returned by the `sentencepiece` library.
+#[derive(Clone, Copy, Debug, Eq, FromPrimitive, PartialEq)]
+pub enum SentencePieceError {
+    Cancelled = 1,
+    Unknown = 2,
+    InvalidArgument = 3,
+    DeadlineExceeded = 4,
+    NotFound = 5,
+    AlreadyExists = 6,
+    PermissionDenied = 7,
+    Unauthenticated = 16,
+    ResourceExhausted = 8,
+    FailedPrecondition = 9,
+    Aborted = 10,
+    OutOfRange = 11,
+    Unimplemented = 12,
+    Internal = 13,
+    Unavailable = 14,
+    DataLoss = 15,
+}
+
+/// Small wrapper struct to deallocate data automatically.
+struct CData {
+    data: *const u8,
+    len: usize,
+}
+
+impl Deref for CData {
+    type Target = [u8];
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { slice::from_raw_parts(self.data, self.len) }
+    }
+}
+
+impl Drop for CData {
+    fn drop(&mut self) {
+        unsafe { libc::free(self.data as *mut c_void) }
+    }
+}
+
+/// Sentence piece tokenizer.
+///
+/// Instances of `SentencePieceProcessor` can be used to tokenizer a
+/// sentence using a sentencepiece model.
+#[derive(Debug)]
+pub struct SentencePieceProcessor {
+    inner: *mut CSentencePieceProcessor,
+}
+
+impl Drop for SentencePieceProcessor {
+    fn drop(&mut self) {
+        unsafe { spp_free(self.inner) }
+    }
+}
+
+impl SentencePieceProcessor {
+    /// Load a sentencepiece model.
+    pub fn load(filename: &str) -> Result<Self, SentencePieceError> {
+        let spp = SentencePieceProcessor {
+            inner: unsafe { spp_new() },
+        };
+
+        let c_filename = CString::new(filename).unwrap();
+        let result = unsafe { spp_load(spp.inner, c_filename.as_ptr()) };
+        if result == 0 {
+            Ok(spp)
+        } else {
+            Err(match FromPrimitive::from_i32(result as i32) {
+                Some(error) => error,
+                None => unreachable!(),
+            })
+        }
+    }
+
+    /// Tokenizer a sentence.
+    pub fn encode(&self, sentence: &str) -> Result<Vec<PieceWithId>, SentencePieceError> {
+        let c_sentence = CString::new(sentence).unwrap();
+
+        let mut len = 0usize;
+        let c_proto =
+            unsafe { spp_encode_as_serialized_proto(self.inner, c_sentence.as_ptr(), &mut len) };
+        let c_proto = CData { data: c_proto, len };
+
+        // Errors are communicated as empty data.
+        if len == 0 {
+            return Err(SentencePieceError::Internal);
+        }
+
+        let proto: Vec<u8> = c_proto.to_owned();
+        let proto_pieces = protobuf::parse_from_bytes::<SentencePieceText>(&proto)
+            .expect("Received invalid protobuf from sentencepiece");
+
+        Ok(proto_pieces
+            .get_pieces()
+            .iter()
+            .map(|proto_piece| PieceWithId {
+                piece: proto_piece.get_piece().to_owned(),
+                id: proto_piece.get_id(),
+                span: (proto_piece.get_begin(), proto_piece.get_end()),
+            })
+            .collect())
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use crate::{SentencePieceError, SentencePieceProcessor};
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn fails_loading_nonexisting_model() {
+        assert_eq!(
+            SentencePieceProcessor::load("non-existing").unwrap_err(),
+            SentencePieceError::NotFound
+        );
+    }
+}
+
+#[cfg(feature = "model-tests")]
+#[cfg(test)]
+mod data_tests {
+    use crate::{PieceWithId, SentencePieceError, SentencePieceProcessor};
+
+    fn albert_model() -> Result<SentencePieceProcessor, SentencePieceError> {
+        let model_path = env!("ALBERT_BASE_MODEL");
+        SentencePieceProcessor::load(model_path)
+    }
+
+    #[test]
+    fn encodes_sentence() {
+        let model = albert_model().unwrap();
+        assert_eq!(
+            model
+                .encode("Hardly anyone attempted to decipher hieroglyphs for decades.")
+                .unwrap(),
+            vec![
+                PieceWithId {
+                    piece: "▁".to_string(),
+                    id: 13,
+                    span: (0, 0)
+                },
+                PieceWithId {
+                    piece: "H".to_string(),
+                    id: 1,
+                    span: (0, 1)
+                },
+                PieceWithId {
+                    piece: "ard".to_string(),
+                    id: 1514,
+                    span: (1, 4)
+                },
+                PieceWithId {
+                    piece: "ly".to_string(),
+                    id: 102,
+                    span: (4, 6)
+                },
+                PieceWithId {
+                    piece: "▁anyone".to_string(),
+                    id: 1276,
+                    span: (6, 13)
+                },
+                PieceWithId {
+                    piece: "▁attempted".to_string(),
+                    id: 3066,
+                    span: (13, 23)
+                },
+                PieceWithId {
+                    piece: "▁to".to_string(),
+                    id: 20,
+                    span: (23, 26)
+                },
+                PieceWithId {
+                    piece: "▁decipher".to_string(),
+                    id: 25277,
+                    span: (26, 35)
+                },
+                PieceWithId {
+                    piece: "▁hiero".to_string(),
+                    id: 21000,
+                    span: (35, 41)
+                },
+                PieceWithId {
+                    piece: "glyph".to_string(),
+                    id: 16689,
+                    span: (41, 46)
+                },
+                PieceWithId {
+                    piece: "s".to_string(),
+                    id: 18,
+                    span: (46, 47)
+                },
+                PieceWithId {
+                    piece: "▁for".to_string(),
+                    id: 26,
+                    span: (47, 51)
+                },
+                PieceWithId {
+                    piece: "▁decades".to_string(),
+                    id: 3784,
+                    span: (51, 59)
+                },
+                PieceWithId {
+                    piece: ".".to_string(),
+                    id: 9,
+                    span: (59, 60)
+                }
+            ]
+        );
+    }
+
+    #[test]
+    fn loads_model() {
+        assert!(albert_model().is_ok());
     }
 }

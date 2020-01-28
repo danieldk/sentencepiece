@@ -11,6 +11,7 @@ in with nixpkgs; mkShell {
     clang
     mozilla.latest.rustChannels.stable.rust
     pkgconfig
+    protobuf
   ];
 
   buildInputs = with nixpkgs; [

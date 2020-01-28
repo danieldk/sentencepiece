@@ -148,6 +148,18 @@ rec {
         features = {
         };
       };
+    "autocfg 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "autocfg";
+        version = "1.0.0";
+        edition = "2015";
+        sha256 = "17cv6pwb4q08s0ynpr4n8hv5299hcmhdgvdchzixfpw8y5qcgapq";
+        authors = [
+          "Josh Stone <cuviper@gmail.com>"
+        ];
+        features = {
+        };
+      };
     "bindgen 0.52.0 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "bindgen";
@@ -659,6 +671,55 @@ rec {
         };
         resolvedDefaultFeatures = [ "alloc" "default" "std" "verbose-errors" ];
       };
+    "num-derive 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "num-derive";
+        version = "0.3.0";
+        edition = "2018";
+        sha256 = "0imprwv8cs01k46g56ajlvc97dp8kz51y2vn6cp9jkw1c6r1b2qc";
+        procMacro = true;
+        libName = "num_derive";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        dependencies = [
+          {
+            name = "proc-macro2";
+            packageId = "proc-macro2 1.0.8 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "quote";
+            packageId = "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "syn";
+            packageId = "syn 1.0.14 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "full-syntax" = [ "syn/full" ];
+        };
+      };
+    "num-traits 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "num-traits";
+        version = "0.2.11";
+        edition = "2015";
+        sha256 = "15khrlm1bra50nd48ijl1vln13m9xg4fxzghf28jp16ic5zf8ay6";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        buildDependencies = [
+          {
+            name = "autocfg";
+            packageId = "autocfg 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "default" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
+      };
     "peeking_take_while 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "peeking_take_while";
@@ -701,6 +762,21 @@ rec {
         features = {
           "default" = [ "proc-macro" ];
         };
+        resolvedDefaultFeatures = [ "default" "proc-macro" ];
+      };
+    "protobuf 2.10.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "protobuf";
+        version = "2.10.1";
+        edition = "2015";
+        sha256 = "1ifkffc7qbn3fhnhyj7c2108a85mryr8g9pjnn3jdglddbcxv1k6";
+        authors = [
+          "Stepan Koltsov <stepan.koltsov@gmail.com>"
+        ];
+        features = {
+          "with-bytes" = [ "bytes" ];
+          "with-serde" = [ "serde" "serde_derive" ];
+        };
       };
     "quick-error 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
@@ -735,6 +811,7 @@ rec {
           "default" = [ "proc-macro" ];
           "proc-macro" = [ "proc-macro2/proc-macro" ];
         };
+        resolvedDefaultFeatures = [ "default" "proc-macro" ];
       };
     "regex 1.3.3 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
@@ -829,11 +906,28 @@ rec {
         ];
         dependencies = [
           {
+            name = "libc";
+            packageId = "libc 0.2.66 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "num-derive";
+            packageId = "num-derive 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "num-traits";
+            packageId = "num-traits 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
+            name = "protobuf";
+            packageId = "protobuf 2.10.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+          {
             name = "sentencepiece-sys";
             packageId = "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece-master/sentencepiece-sys)";
           }
         ];
         features = {
+          "proto-compile" = [ "protoc-rust" ];
         };
       };
     "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece-master/sentencepiece-sys)"
@@ -885,6 +979,39 @@ rec {
         ];
         features = {
         };
+      };
+    "syn 1.0.14 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "syn";
+        version = "1.0.14";
+        edition = "2018";
+        sha256 = "1xf8g9a3yl41027g5napiwfd7r87y734lf2dqdyyzyfzv183avxg";
+        authors = [
+          "David Tolnay <dtolnay@gmail.com>"
+        ];
+        dependencies = [
+          {
+            name = "proc-macro2";
+            packageId = "proc-macro2 1.0.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "quote";
+            packageId = "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+            usesDefaultFeatures = false;
+          }
+          {
+            name = "unicode-xid";
+            packageId = "unicode-xid 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          }
+        ];
+        features = {
+          "default" = [ "derive" "parsing" "printing" "clone-impls" "proc-macro" ];
+          "printing" = [ "quote" ];
+          "proc-macro" = [ "proc-macro2/proc-macro" "quote/proc-macro" ];
+        };
+        resolvedDefaultFeatures = [ "clone-impls" "default" "derive" "parsing" "printing" "proc-macro" "quote" ];
       };
     "termcolor 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
