@@ -5,6 +5,7 @@ authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
 repository = "https://github.com/stickeritis/sentencepiece.git"
+documentation = "https://rustdoc.danieldk.eu/sentencepiece"
 license = "Apache-2.0"
 
 [dependencies]
