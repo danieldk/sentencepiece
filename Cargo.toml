@@ -20,5 +20,5 @@ sentencepiece-sys = { path = "sentencepiece-sys", version = "0.1.0" }
 protoc-rust = { version = "2", optional = true }
 
 [features]
-model-tests = []
+albert-tests = []
 proto-compile = [ "protoc-rust" ]

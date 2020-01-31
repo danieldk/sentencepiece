@@ -6,6 +6,7 @@
 
 using sentencepiece::SentencePieceProcessor;
 using sentencepiece::SentencePieceText;
+using sentencepiece::util::min_string_view;
 
 extern "C" {
 
@@ -25,6 +26,11 @@ unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char 
 
 int spp_load(SentencePieceProcessor *spp, char const *filename) {
   auto status = spp->Load(filename);
+  return status.code();
+}
+
+int spp_from_serialized_proto(SentencePieceProcessor *spp, char const *data, size_t len) {
+  auto status = spp->LoadFromSerializedProto(min_string_view(data, len));
   return status.code();
 }
 
