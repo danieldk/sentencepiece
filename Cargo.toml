@@ -3,6 +3,9 @@ name = "sentencepiece"
 version = "0.1.0"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
+description = "Binding for the sentencepiece tokenizer"
+repository = "https://github.com/stickeritis/sentencepiece.git"
+license = "Apache-2.0"
 
 [dependencies]
 libc = "0.2"
@@ -11,7 +14,7 @@ num-traits = "0.2"
 # Generated files are compatible only with the same version
 # of protobuf runtime.
 protobuf = "= 2.10.1"
-sentencepiece-sys = { path = "sentencepiece-sys" }
+sentencepiece-sys = { path = "sentencepiece-sys", version = "0.1.0" }
 
 [build-dependencies]
 protoc-rust = { version = "2", optional = true }

@@ -20,7 +20,7 @@ rec {
   #
 
   rootCrate = rec {
-    packageId = "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece-master)";
+    packageId = "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece)";
 
     # Use this attribute to refer to the derivation building your root crate package.
     # You can override the features with rootCrate.build.override { features = [ "default" "feature1" ... ]; }.
@@ -40,9 +40,9 @@ rec {
   # workspaceMembers."${crateName}".build.override { features = [ "default" "feature1" ... ]; }.
   workspaceMembers = {
     "sentencepiece" = rec {
-      packageId = "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece-master)";
+      packageId = "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece)";
       build = buildRustCrateWithFeatures {
-        packageId = "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece-master)";
+        packageId = "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece)";
         features = rootFeatures;
       };
 
@@ -895,7 +895,7 @@ rec {
         features = {
         };
       };
-    "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece-master)"
+    "sentencepiece 0.1.0 (path+file:///home/daniel/git/sentencepiece)"
       = rec {
         crateName = "sentencepiece";
         version = "0.1.0";
@@ -923,14 +923,14 @@ rec {
           }
           {
             name = "sentencepiece-sys";
-            packageId = "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece-master/sentencepiece-sys)";
+            packageId = "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece/sentencepiece-sys)";
           }
         ];
         features = {
           "proto-compile" = [ "protoc-rust" ];
         };
       };
-    "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece-master/sentencepiece-sys)"
+    "sentencepiece-sys 0.1.0 (path+file:///home/daniel/git/sentencepiece/sentencepiece-sys)"
       = rec {
         crateName = "sentencepiece-sys";
         version = "0.1.0";
