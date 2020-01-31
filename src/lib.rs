@@ -1,6 +1,19 @@
 //! This crate binds the
 //! [sentencepiece](https://github.com/google/sentencepiece)
 //! library. sentencepiece is an unsupervised text tokenizer.
+//!
+//! The main data structure of this crate is `SentencePieceProcessor`,
+//! which is used to tokenize sentences:
+//!
+//! ```
+//! use sentencepiece::SentencePieceProcessor;
+//!
+//! let spp = SentencePieceProcessor::load("testdata/toy.model").unwrap();
+//! let pieces = spp.encode("I saw a girl with a telescope.").unwrap()
+//!   .into_iter().map(|p| p.piece).collect::<Vec<_>>();
+//! assert_eq!(pieces, vec!["▁I", "▁saw", "▁a", "▁girl", "▁with",
+//!   "▁a", "▁t", "el", "es", "c", "o", "pe", "."]);
+//! ```
 
 use std::ffi::{c_void, CString};
 use std::ops::{Deref, Drop};
