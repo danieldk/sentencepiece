@@ -32,6 +32,6 @@ let
   buildRustCrate = pkgs.buildRustCrate.override { defaultCrateOverrides = crateOverrides; };
   cargo_nix = pkgs.callPackage ./nix/Cargo.nix { inherit buildRustCrate; };
 in cargo_nix.rootCrate.build.override {
-  features = [ "model-tests" ];
+  features = [ "albert-tests" ];
   runTests = true;
 }

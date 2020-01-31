@@ -10,7 +10,7 @@ use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 
 use sentencepiece_sys::{
-    spp_encode_as_serialized_proto, spp_free, spp_load, spp_new,
+    spp_encode_as_serialized_proto, spp_free, spp_from_serialized_proto, spp_load, spp_new,
     SentencePieceProcessor as CSentencePieceProcessor,
 };
 
@@ -89,6 +89,24 @@ impl Drop for SentencePieceProcessor {
 }
 
 impl SentencePieceProcessor {
+    pub fn from_serialized_proto(data: &[u8]) -> Result<Self, SentencePieceError> {
+        let spp = SentencePieceProcessor {
+            inner: unsafe { spp_new() },
+        };
+
+        let result =
+            unsafe { spp_from_serialized_proto(spp.inner, data.as_ptr() as *const i8, data.len()) };
+
+        if result == 0 {
+            Ok(spp)
+        } else {
+            Err(match FromPrimitive::from_i32(result as i32) {
+                Some(error) => error,
+                None => unreachable!(),
+            })
+        }
+    }
+
     /// Load a sentencepiece model.
     pub fn load(filename: &str) -> Result<Self, SentencePieceError> {
         let spp = SentencePieceProcessor {
@@ -139,7 +157,87 @@ impl SentencePieceProcessor {
 
 #[cfg(test)]
 mod tests {
-    use crate::{SentencePieceError, SentencePieceProcessor};
+    use crate::{PieceWithId, SentencePieceError, SentencePieceProcessor};
+
+    fn toy_model() -> Result<SentencePieceProcessor, SentencePieceError> {
+        let model_data = include_bytes!("../testdata/toy.model");
+        SentencePieceProcessor::from_serialized_proto(model_data)
+    }
+
+    #[test]
+    fn encodes_sentence_with_toy_model() {
+        let model = toy_model().unwrap();
+        assert_eq!(
+            model.encode("I saw a girl with a telescope.").unwrap(),
+            vec![
+                PieceWithId {
+                    piece: "▁I".to_string(),
+                    id: 8,
+                    span: (0, 1)
+                },
+                PieceWithId {
+                    piece: "▁saw".to_string(),
+                    id: 465,
+                    span: (1, 5)
+                },
+                PieceWithId {
+                    piece: "▁a".to_string(),
+                    id: 10,
+                    span: (5, 7)
+                },
+                PieceWithId {
+                    piece: "▁girl".to_string(),
+                    id: 947,
+                    span: (7, 12)
+                },
+                PieceWithId {
+                    piece: "▁with".to_string(),
+                    id: 41,
+                    span: (12, 17)
+                },
+                PieceWithId {
+                    piece: "▁a".to_string(),
+                    id: 10,
+                    span: (17, 19)
+                },
+                PieceWithId {
+                    piece: "▁t".to_string(),
+                    id: 170,
+                    span: (19, 21)
+                },
+                PieceWithId {
+                    piece: "el".to_string(),
+                    id: 168,
+                    span: (21, 23)
+                },
+                PieceWithId {
+                    piece: "es".to_string(),
+                    id: 110,
+                    span: (23, 25)
+                },
+                PieceWithId {
+                    piece: "c".to_string(),
+                    id: 28,
+                    span: (25, 26)
+                },
+                PieceWithId {
+                    piece: "o".to_string(),
+                    id: 20,
+                    span: (26, 27)
+                },
+                PieceWithId {
+                    piece: "pe".to_string(),
+                    id: 143,
+                    span: (27, 29)
+                },
+                PieceWithId {
+                    piece: ".".to_string(),
+                    id: 4,
+                    span: (29, 30)
+                }
+            ]
+        );
+    }
 
     #[test]
     fn fails_loading_nonexisting_model() {
@@ -148,11 +246,16 @@ mod tests {
             SentencePieceError::NotFound
         );
     }
+
+    #[test]
+    fn loads_model_from_serialized_protobuf() {
+        assert!(toy_model().is_ok());
+    }
 }
 
-#[cfg(feature = "model-tests")]
+#[cfg(feature = "albert-tests")]
 #[cfg(test)]
-mod data_tests {
+mod albert_tests {
     use crate::{PieceWithId, SentencePieceError, SentencePieceProcessor};
 
     fn albert_model() -> Result<SentencePieceProcessor, SentencePieceError> {
@@ -161,7 +264,7 @@ mod data_tests {
     }
 
     #[test]
-    fn encodes_sentence() {
+    fn encodes_sentence_with_albert_model() {
         let model = albert_model().unwrap();
         assert_eq!(
             model
