@@ -168,6 +168,13 @@ impl SentencePieceProcessor {
     }
 }
 
+// sentencepiece is thread-safe:
+// https://github.com/google/sentencepiece/issues/207
+
+unsafe impl Send for SentencePieceProcessor {}
+
+unsafe impl Sync for SentencePieceProcessor {}
+
 #[cfg(test)]
 mod tests {
     use crate::{PieceWithId, SentencePieceError, SentencePieceProcessor};
