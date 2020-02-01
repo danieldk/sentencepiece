@@ -12,6 +12,7 @@ in with nixpkgs; mkShell {
     mozilla.latest.rustChannels.stable.rust
     pkgconfig
     protobuf
+    rust-bindgen
   ];
 
   buildInputs = with nixpkgs; [

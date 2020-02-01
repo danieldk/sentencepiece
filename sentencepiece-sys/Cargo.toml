@@ -10,6 +10,5 @@ license = "Apache-2.0"
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.52"
 cc = "1"
 pkg-config = "0.3"
