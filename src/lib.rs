@@ -19,6 +19,7 @@ use std::ffi::{c_void, CString};
 use std::ops::{Deref, Drop};
 use std::slice;
 
+use failure::Fail;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 
@@ -46,23 +47,39 @@ pub struct PieceWithId {
 }
 
 /// Errors that returned by the `sentencepiece` library.
-#[derive(Clone, Copy, Debug, Eq, FromPrimitive, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Fail, FromPrimitive, PartialEq)]
 pub enum SentencePieceError {
+    #[fail(display = "Cancelled")]
     Cancelled = 1,
+    #[fail(display = "Unknown")]
     Unknown = 2,
+    #[fail(display = "Invalid argument")]
     InvalidArgument = 3,
+    #[fail(display = "Deadline exceeded")]
     DeadlineExceeded = 4,
+    #[fail(display = "Not found")]
     NotFound = 5,
+    #[fail(display = "Already exists")]
     AlreadyExists = 6,
+    #[fail(display = "Permission denied")]
     PermissionDenied = 7,
+    #[fail(display = "Unauthenticated")]
     Unauthenticated = 16,
+    #[fail(display = "Resource exhausted")]
     ResourceExhausted = 8,
+    #[fail(display = "Failed precondition")]
     FailedPrecondition = 9,
+    #[fail(display = "Aborted")]
     Aborted = 10,
+    #[fail(display = "Out of range")]
     OutOfRange = 11,
+    #[fail(display = "Unimplemented")]
     Unimplemented = 12,
+    #[fail(display = "Internal error")]
     Internal = 13,
+    #[fail(display = "Unavailable")]
     Unavailable = 14,
+    #[fail(display = "Data loss")]
     DataLoss = 15,
 }
 
