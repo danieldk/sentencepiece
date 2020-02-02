@@ -1,10 +1,10 @@
 [package]
 name = "sentencepiece-sys"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
-repository = "https://github.com/stickeritis/sentencepiece.git"
+repository = "https://github.com/danieldk/sentencepiece.git"
 license = "Apache-2.0"
 
 [dependencies]
