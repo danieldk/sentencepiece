@@ -29,6 +29,14 @@ int spp_load(SentencePieceProcessor *spp, char const *filename) {
   return status.code();
 }
 
+bool spp_is_unknown(SentencePieceProcessor *spp, int id) {
+  return spp->IsUnknown(id);
+}
+
+int spp_piece_to_id(SentencePieceProcessor *spp, char const *piece) {
+  return spp->PieceToId(piece);
+}
+
 int spp_from_serialized_proto(SentencePieceProcessor *spp, char const *data, size_t len) {
   auto status = spp->LoadFromSerializedProto(min_string_view(data, len));
   return status.code();

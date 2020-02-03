@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -17,6 +18,10 @@ int spp_from_serialized_proto(SentencePieceProcessor *spp, char const *data, siz
 int spp_load(SentencePieceProcessor *spp, char const *filename);
 
 void spp_free(SentencePieceProcessor *spp);
+
+bool spp_is_unknown(SentencePieceProcessor *spp, int id);
+
+int spp_piece_to_id(SentencePieceProcessor *spp, char const *piece);
 
 #ifdef __cplusplus
 }
