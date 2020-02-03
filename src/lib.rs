@@ -15,7 +15,7 @@
 //!   "▁a", "▁t", "el", "es", "c", "o", "pe", "."]);
 //! ```
 
-use std::ffi::{c_void, CString};
+use std::ffi::{c_void, CString, NulError};
 use std::ops::{Deref, Drop};
 use std::slice;
 
@@ -24,8 +24,8 @@ use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 
 use sentencepiece_sys::{
-    spp_encode_as_serialized_proto, spp_free, spp_from_serialized_proto, spp_load, spp_new,
-    SentencePieceProcessor as CSentencePieceProcessor,
+    spp_encode_as_serialized_proto, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load,
+    spp_new, spp_piece_to_id, SentencePieceProcessor as CSentencePieceProcessor,
 };
 
 mod sentencepiece;
@@ -183,6 +183,18 @@ impl SentencePieceProcessor {
             })
             .collect())
     }
+
+    /// Get the identifier of a sentence piece.
+    pub fn piece_to_id(&self, piece: &str) -> Result<Option<u32>, NulError> {
+        let c_piece = CString::new(piece.as_bytes())?;
+        let id = unsafe { spp_piece_to_id(self.inner, c_piece.as_ptr()) };
+
+        if unsafe { spp_is_unknown(self.inner, id) } {
+            Ok(None)
+        } else {
+            Ok(Some(id as u32))
+        }
+    }
 }
 
 // sentencepiece is thread-safe:
@@ -287,6 +299,13 @@ mod tests {
     #[test]
     fn loads_model_from_serialized_protobuf() {
         assert!(toy_model().is_ok());
+    }
+
+    #[test]
+    fn can_lookup_piece_id() {
+        let toy_model = toy_model().unwrap();
+        assert_eq!(toy_model.piece_to_id("pe"), Ok(Some(143)));
+        assert_eq!(toy_model.piece_to_id("unknown"), Ok(None));
     }
 }
 
