@@ -20,7 +20,7 @@ rec {
   #
 
   rootCrate = rec {
-    packageId = "sentencepiece 0.1.2 (path+file:///home/daniel/git/sentencepiece)";
+    packageId = "sentencepiece 0.1.3 (path+file:///home/daniel/git/sentencepiece)";
 
     # Use this attribute to refer to the derivation building your root crate package.
     # You can override the features with rootCrate.build.override { features = [ "default" "feature1" ... ]; }.
@@ -40,9 +40,9 @@ rec {
   # workspaceMembers."${crateName}".build.override { features = [ "default" "feature1" ... ]; }.
   workspaceMembers = {
     "sentencepiece" = rec {
-      packageId = "sentencepiece 0.1.2 (path+file:///home/daniel/git/sentencepiece)";
+      packageId = "sentencepiece 0.1.3 (path+file:///home/daniel/git/sentencepiece)";
       build = buildRustCrateWithFeatures {
-        packageId = "sentencepiece 0.1.2 (path+file:///home/daniel/git/sentencepiece)";
+        packageId = "sentencepiece 0.1.3 (path+file:///home/daniel/git/sentencepiece)";
         features = rootFeatures;
       };
 
@@ -383,10 +383,10 @@ rec {
           "rustc-dep-of-std" = [ "core" "compiler_builtins" ];
         };
       };
-    "sentencepiece 0.1.2 (path+file:///home/daniel/git/sentencepiece)"
+    "sentencepiece 0.1.3 (path+file:///home/daniel/git/sentencepiece)"
       = rec {
         crateName = "sentencepiece";
-        version = "0.1.2";
+        version = "0.1.3";
         edition = "2018";
         src = (builtins.filterSource sourceFilter ../.);
         authors = [
@@ -415,17 +415,17 @@ rec {
           }
           {
             name = "sentencepiece-sys";
-            packageId = "sentencepiece-sys 0.1.2 (path+file:///home/daniel/git/sentencepiece/sentencepiece-sys)";
+            packageId = "sentencepiece-sys 0.1.3 (path+file:///home/daniel/git/sentencepiece/sentencepiece-sys)";
           }
         ];
         features = {
           "proto-compile" = [ "protoc-rust" ];
         };
       };
-    "sentencepiece-sys 0.1.2 (path+file:///home/daniel/git/sentencepiece/sentencepiece-sys)"
+    "sentencepiece-sys 0.1.3 (path+file:///home/daniel/git/sentencepiece/sentencepiece-sys)"
       = rec {
         crateName = "sentencepiece-sys";
-        version = "0.1.2";
+        version = "0.1.3";
         edition = "2018";
         src = (builtins.filterSource sourceFilter ../sentencepiece-sys);
         authors = [
