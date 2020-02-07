@@ -25,7 +25,7 @@ use num_traits::FromPrimitive;
 
 use sentencepiece_sys::{
     spp_encode_as_serialized_proto, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load,
-    spp_new, spp_piece_to_id, SentencePieceProcessor as CSentencePieceProcessor,
+    spp_new, spp_piece_to_id, spp_unknown_id, SentencePieceProcessor as CSentencePieceProcessor,
 };
 
 mod sentencepiece;
@@ -195,6 +195,10 @@ impl SentencePieceProcessor {
             Ok(Some(id as u32))
         }
     }
+
+    pub fn unknown_id(&self) -> u32 {
+        unsafe { spp_unknown_id(self.inner) as u32 }
+    }
 }
 
 // sentencepiece is thread-safe:
@@ -306,6 +310,12 @@ mod tests {
         let toy_model = toy_model().unwrap();
         assert_eq!(toy_model.piece_to_id("pe"), Ok(Some(143)));
         assert_eq!(toy_model.piece_to_id("unknown"), Ok(None));
+    }
+
+    #[test]
+    fn can_lookup_unknown_id() {
+        let toy_model = toy_model().unwrap();
+        assert_eq!(toy_model.unknown_id(), 0);
     }
 }
 

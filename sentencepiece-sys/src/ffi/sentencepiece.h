@@ -23,6 +23,8 @@ bool spp_is_unknown(SentencePieceProcessor *spp, int id);
 
 int spp_piece_to_id(SentencePieceProcessor *spp, char const *piece);
 
+int spp_unknown_id(SentencePieceProcessor *spp);
+
 #ifdef __cplusplus
 }
 #endif
