@@ -46,4 +46,8 @@ void spp_free(SentencePieceProcessor *spp) {
   delete spp;
 }
 
+int spp_unknown_id(SentencePieceProcessor *spp) {
+  return spp->unk_id();
+}
+
 }

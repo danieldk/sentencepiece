@@ -94,3 +94,6 @@ extern "C" {
         piece: *const ::std::os::raw::c_char,
     ) -> ::std::os::raw::c_int;
 }
+extern "C" {
+    pub fn spp_unknown_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
+}
