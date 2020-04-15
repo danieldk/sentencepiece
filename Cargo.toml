@@ -9,7 +9,6 @@ documentation = "https://rustdoc.danieldk.eu/sentencepiece"
 license = "Apache-2.0"
 
 [dependencies]
-failure = "0.1"
 libc = "0.2"
 num-derive = "0.3"
 num-traits = "0.2"
@@ -17,6 +16,7 @@ num-traits = "0.2"
 # of protobuf runtime.
 protobuf = "= 2.10.1"
 sentencepiece-sys = { path = "sentencepiece-sys", version = "0.1.3" }
+thiserror = "1"
 
 [build-dependencies]
 protoc-rust = { version = "2", optional = true }

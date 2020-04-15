@@ -19,9 +19,9 @@ use std::ffi::{c_void, CString, NulError};
 use std::ops::{Deref, Drop};
 use std::slice;
 
-use failure::Fail;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
+use thiserror::Error;
 
 use sentencepiece_sys::{
     spp_encode_as_serialized_proto, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load,
@@ -47,39 +47,39 @@ pub struct PieceWithId {
 }
 
 /// Errors that returned by the `sentencepiece` library.
-#[derive(Clone, Copy, Debug, Eq, Fail, FromPrimitive, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, FromPrimitive, PartialEq)]
 pub enum SentencePieceError {
-    #[fail(display = "Cancelled")]
+    #[error("Cancelled")]
     Cancelled = 1,
-    #[fail(display = "Unknown")]
+    #[error("Unknown")]
     Unknown = 2,
-    #[fail(display = "Invalid argument")]
+    #[error("Invalid argument")]
     InvalidArgument = 3,
-    #[fail(display = "Deadline exceeded")]
+    #[error("Deadline exceeded")]
     DeadlineExceeded = 4,
-    #[fail(display = "Not found")]
+    #[error("Not found")]
     NotFound = 5,
-    #[fail(display = "Already exists")]
+    #[error("Already exists")]
     AlreadyExists = 6,
-    #[fail(display = "Permission denied")]
+    #[error("Permission denied")]
     PermissionDenied = 7,
-    #[fail(display = "Unauthenticated")]
+    #[error("Unauthenticated")]
     Unauthenticated = 16,
-    #[fail(display = "Resource exhausted")]
+    #[error("Resource exhausted")]
     ResourceExhausted = 8,
-    #[fail(display = "Failed precondition")]
+    #[error("Failed precondition")]
     FailedPrecondition = 9,
-    #[fail(display = "Aborted")]
+    #[error("Aborted")]
     Aborted = 10,
-    #[fail(display = "Out of range")]
+    #[error("Out of range")]
     OutOfRange = 11,
-    #[fail(display = "Unimplemented")]
+    #[error("Unimplemented")]
     Unimplemented = 12,
-    #[fail(display = "Internal error")]
+    #[error("Internal error")]
     Internal = 13,
-    #[fail(display = "Unavailable")]
+    #[error("Unavailable")]
     Unavailable = 14,
-    #[fail(display = "Data loss")]
+    #[error("Data loss")]
     DataLoss = 15,
 }
 
