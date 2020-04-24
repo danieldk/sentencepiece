@@ -10,6 +10,7 @@ fn main() {
     builder
         .file("src/ffi/sentencepiece.cpp")
         .cpp(true)
+        .flag_if_supported("-std=c++11")
         .compile("sentencepiece_wrap");
 
     println!("cargo:rerun-if-changed=src/ffi/sentencepiece.cpp");
