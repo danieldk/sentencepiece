@@ -1,6 +1,6 @@
 [package]
 name = "sentencepiece"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
@@ -15,7 +15,7 @@ num-traits = "0.2"
 # Generated files are compatible only with the same version
 # of protobuf runtime.
 protobuf = "= 2.10.1"
-sentencepiece-sys = { path = "sentencepiece-sys", version = "0.2.0" }
+sentencepiece-sys = { path = "sentencepiece-sys", version = "0.2.1" }
 thiserror = "1"
 
 [build-dependencies]
