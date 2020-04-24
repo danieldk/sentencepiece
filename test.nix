@@ -4,7 +4,7 @@ let
   sources = import ./nix/sources.nix;
   danieldk = pkgs.callPackage sources.danieldk {};
   albertBase = builtins.fetchurl {
-    url = "https://s3.amazonaws.com/models.huggingface.co/bert/albert-base-spiece.model";
+    url = "https://s3.amazonaws.com/models.huggingface.co/bert/albert-base-v1-spiece.model";
     sha256 = "0dh35nh493bwiqw6yzcwp1mgca1lzgjjhbb04zzc5id6cyv05yzy";
   };
   crateOverrides = with pkgs; defaultCrateOverrides // {
