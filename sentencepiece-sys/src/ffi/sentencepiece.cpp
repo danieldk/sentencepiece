@@ -1,12 +1,21 @@
 #include <cstdlib>
 #include <cstring>
+#include <type_traits>
 #include <vector>
 
 #include <sentencepiece_processor.h>
 
+using absl::string_view;
 using sentencepiece::SentencePieceProcessor;
 using sentencepiece::SentencePieceText;
-using sentencepiece::util::min_string_view;
+
+// Inspired by:
+// https://stackoverflow.com/a/14589519
+template<typename E>
+constexpr auto to_underlying_type(E e) -> typename std::underlying_type<E>::type 
+{
+   return static_cast<typename std::underlying_type<E>::type>(e);
+}
 
 extern "C" {
 
@@ -26,7 +35,7 @@ unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char 
 
 int spp_load(SentencePieceProcessor *spp, char const *filename) {
   auto status = spp->Load(filename);
-  return status.code();
+  return to_underlying_type(status.code());
 }
 
 bool spp_is_unknown(SentencePieceProcessor *spp, int id) {
@@ -38,8 +47,8 @@ int spp_piece_to_id(SentencePieceProcessor *spp, char const *piece) {
 }
 
 int spp_from_serialized_proto(SentencePieceProcessor *spp, char const *data, size_t len) {
-  auto status = spp->LoadFromSerializedProto(min_string_view(data, len));
-  return status.code();
+  auto status = spp->LoadFromSerializedProto(string_view(data, len));
+  return to_underlying_type(status.code());
 }
 
 void spp_free(SentencePieceProcessor *spp) {
