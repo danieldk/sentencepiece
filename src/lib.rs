@@ -17,6 +17,7 @@
 
 use std::ffi::{c_void, CString, NulError};
 use std::ops::{Deref, Drop};
+use std::os::raw::c_char;
 use std::slice;
 
 use num_derive::FromPrimitive;
@@ -124,8 +125,9 @@ impl SentencePieceProcessor {
             inner: unsafe { spp_new() },
         };
 
-        let result =
-            unsafe { spp_from_serialized_proto(spp.inner, data.as_ptr() as *const i8, data.len()) };
+        let result = unsafe {
+            spp_from_serialized_proto(spp.inner, data.as_ptr() as *const c_char, data.len())
+        };
 
         if result == 0 {
             Ok(spp)
