@@ -11,18 +11,6 @@
         "url": "https://github.com/danieldk/nix-packages/archive/6e7a5dd56def67c0c198b6e780ee0a718e6eca73.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "mozilla": {
-        "branch": "master",
-        "description": "mozilla related nixpkgs (extends nixos/nixpkgs repo)",
-        "homepage": null,
-        "owner": "mozilla",
-        "repo": "nixpkgs-mozilla",
-        "rev": "d46240e8755d91bc36c0c38621af72bf5c489e13",
-        "sha256": "0icws1cbdscic8s8lx292chvh3fkkbjp571j89lmmha7vl2n71jg",
-        "type": "tarball",
-        "url": "https://github.com/mozilla/nixpkgs-mozilla/archive/d46240e8755d91bc36c0c38621af72bf5c489e13.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "nixpkgs": {
         "branch": "nixos-unstable",
         "description": "A read-only mirror of NixOS/nixpkgs tracking the released channels. Send issues and PRs to",

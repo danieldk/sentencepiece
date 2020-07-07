@@ -5,11 +5,11 @@ let
   sources = import ./nix/sources.nix;
   nixpkgs = import sources.nixpkgs {};
   danieldk = nixpkgs.callPackage sources.danieldk {};
-  mozilla = nixpkgs.callPackage "${sources.mozilla}/package-set.nix" {};
 in with nixpkgs; mkShell {
   nativeBuildInputs = with nixpkgs; [
+    cargo
     clang
-    mozilla.latest.rustChannels.stable.rust
+    clippy
     pkgconfig
     protobuf
     rust-bindgen
