@@ -19,6 +19,10 @@ int spp_load(SentencePieceProcessor *spp, char const *filename);
 
 void spp_free(SentencePieceProcessor *spp);
 
+int spp_bos_id(SentencePieceProcessor *spp);
+
+int spp_eos_id(SentencePieceProcessor *spp);
+
 bool spp_is_unknown(SentencePieceProcessor *spp, int id);
 
 int spp_piece_to_id(SentencePieceProcessor *spp, char const *piece);

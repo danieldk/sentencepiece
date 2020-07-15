@@ -23,6 +23,11 @@ SentencePieceProcessor *spp_new() {
   return new SentencePieceProcessor();
 }
 
+
+int spp_bos_id(SentencePieceProcessor *spp) {
+  return spp->bos_id();
+}
+
 unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t *len) {
   auto serialized = spp->EncodeAsSerializedProto(sentence);
 
@@ -31,6 +36,10 @@ unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char 
   memcpy(data, serialized.data(), serialized.size());
 
   return data;
+}
+
+int spp_eos_id(SentencePieceProcessor *spp) {
+  return spp->eos_id();
 }
 
 int spp_load(SentencePieceProcessor *spp, char const *filename) {

@@ -3,6 +3,7 @@
 pub const true_: u32 = 1;
 pub const false_: u32 = 0;
 pub const __bool_true_false_are_defined: u32 = 1;
+pub type size_t = ::std::os::raw::c_ulong;
 pub type wchar_t = ::std::os::raw::c_int;
 #[repr(C)]
 #[repr(align(16))]
@@ -63,7 +64,7 @@ extern "C" {
     pub fn spp_encode_as_serialized_proto(
         spp: *mut SentencePieceProcessor,
         sentence: *const ::std::os::raw::c_char,
-        len: *mut usize,
+        len: *mut size_t,
     ) -> *mut ::std::os::raw::c_uchar;
 }
 extern "C" {
@@ -73,7 +74,7 @@ extern "C" {
     pub fn spp_from_serialized_proto(
         spp: *mut SentencePieceProcessor,
         data: *const ::std::os::raw::c_char,
-        len: usize,
+        len: size_t,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
@@ -84,6 +85,12 @@ extern "C" {
 }
 extern "C" {
     pub fn spp_free(spp: *mut SentencePieceProcessor);
+}
+extern "C" {
+    pub fn spp_bos_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn spp_eos_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn spp_is_unknown(spp: *mut SentencePieceProcessor, id: ::std::os::raw::c_int) -> bool;
