@@ -25,8 +25,9 @@ use num_traits::FromPrimitive;
 use thiserror::Error;
 
 use sentencepiece_sys::{
-    spp_encode_as_serialized_proto, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load,
-    spp_new, spp_piece_to_id, spp_unknown_id, SentencePieceProcessor as CSentencePieceProcessor,
+    spp_bos_id, spp_encode_as_serialized_proto, spp_eos_id, spp_free, spp_from_serialized_proto,
+    spp_is_unknown, spp_load, spp_new, spp_piece_to_id, spp_unknown_id,
+    SentencePieceProcessor as CSentencePieceProcessor,
 };
 
 mod sentencepiece;
@@ -87,14 +88,14 @@ pub enum SentencePieceError {
 /// Small wrapper struct to deallocate data automatically.
 struct CData {
     data: *const u8,
-    len: usize,
+    len: u64,
 }
 
 impl Deref for CData {
     type Target = [u8];
 
     fn deref(&self) -> &Self::Target {
-        unsafe { slice::from_raw_parts(self.data, self.len) }
+        unsafe { slice::from_raw_parts(self.data, self.len as usize) }
     }
 }
 
@@ -126,7 +127,7 @@ impl SentencePieceProcessor {
         };
 
         let result = unsafe {
-            spp_from_serialized_proto(spp.inner, data.as_ptr() as *const c_char, data.len())
+            spp_from_serialized_proto(spp.inner, data.as_ptr() as *const c_char, data.len() as u64)
         };
 
         if result == 0 {
@@ -157,11 +158,15 @@ impl SentencePieceProcessor {
         }
     }
 
+    pub fn bos_id(&self) -> u32 {
+        unsafe { spp_bos_id(self.inner) as u32 }
+    }
+
     /// Tokenizer a sentence.
     pub fn encode(&self, sentence: &str) -> Result<Vec<PieceWithId>, SentencePieceError> {
         let c_sentence = CString::new(sentence).unwrap();
 
-        let mut len = 0usize;
+        let mut len = 0u64;
         let c_proto =
             unsafe { spp_encode_as_serialized_proto(self.inner, c_sentence.as_ptr(), &mut len) };
         let c_proto = CData { data: c_proto, len };
@@ -184,6 +189,10 @@ impl SentencePieceProcessor {
                 span: (proto_piece.get_begin(), proto_piece.get_end()),
             })
             .collect())
+    }
+
+    pub fn eos_id(&self) -> u32 {
+        unsafe { spp_eos_id(self.inner) as u32 }
     }
 
     /// Get the identifier of a sentence piece.
@@ -312,6 +321,18 @@ mod tests {
         let toy_model = toy_model().unwrap();
         assert_eq!(toy_model.piece_to_id("pe"), Ok(Some(143)));
         assert_eq!(toy_model.piece_to_id("unknown"), Ok(None));
+    }
+
+    #[test]
+    fn can_lookup_bos_id() {
+        let toy_model = toy_model().unwrap();
+        assert_eq!(toy_model.bos_id(), 1);
+    }
+
+    #[test]
+    fn can_lookup_eos_id() {
+        let toy_model = toy_model().unwrap();
+        assert_eq!(toy_model.eos_id(), 2);
     }
 
     #[test]
