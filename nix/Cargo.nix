@@ -515,7 +515,7 @@ rec {
       };
       "sentencepiece" = rec {
         crateName = "sentencepiece";
-        version = "0.3.1";
+        version = "0.3.2";
         edition = "2018";
         src = (builtins.filterSource sourceFilter ../.);
         authors = [
@@ -561,7 +561,7 @@ rec {
       };
       "sentencepiece-sys" = rec {
         crateName = "sentencepiece-sys";
-        version = "0.3.0";
+        version = "0.3.2";
         edition = "2018";
         src = (builtins.filterSource sourceFilter ../sentencepiece-sys);
         authors = [

@@ -1,6 +1,6 @@
 [package]
 name = "sentencepiece-sys"
-version = "0.3.0"
+version = "0.3.2"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
