@@ -158,8 +158,13 @@ impl SentencePieceProcessor {
         }
     }
 
-    pub fn bos_id(&self) -> u32 {
-        unsafe { spp_bos_id(self.inner) as u32 }
+    pub fn bos_id(&self) -> Option<u32> {
+        let bos_id = unsafe { spp_bos_id(self.inner) };
+        if bos_id < 0 {
+            None
+        } else {
+            Some(bos_id as u32)
+        }
     }
 
     /// Tokenizer a sentence.
@@ -191,8 +196,13 @@ impl SentencePieceProcessor {
             .collect())
     }
 
-    pub fn eos_id(&self) -> u32 {
-        unsafe { spp_eos_id(self.inner) as u32 }
+    pub fn eos_id(&self) -> Option<u32> {
+        let eos_id = unsafe { spp_eos_id(self.inner) };
+        if eos_id < 0 {
+            None
+        } else {
+            Some(eos_id as u32)
+        }
     }
 
     /// Get the identifier of a sentence piece.
@@ -326,13 +336,13 @@ mod tests {
     #[test]
     fn can_lookup_bos_id() {
         let toy_model = toy_model().unwrap();
-        assert_eq!(toy_model.bos_id(), 1);
+        assert_eq!(toy_model.bos_id(), Some(1));
     }
 
     #[test]
     fn can_lookup_eos_id() {
         let toy_model = toy_model().unwrap();
-        assert_eq!(toy_model.eos_id(), 2);
+        assert_eq!(toy_model.eos_id(), Some(2));
     }
 
     #[test]
@@ -350,6 +360,24 @@ mod albert_tests {
     fn albert_model() -> Result<SentencePieceProcessor, SentencePieceError> {
         let model_path = env!("ALBERT_BASE_MODEL");
         SentencePieceProcessor::load(model_path)
+    }
+
+    #[test]
+    fn can_lookup_bos_id() {
+        let albert_model = albert_model().unwrap();
+        assert_eq!(albert_model.bos_id(), None);
+    }
+
+    #[test]
+    fn can_lookup_eos_id() {
+        let albert_model = albert_model().unwrap();
+        assert_eq!(albert_model.eos_id(), None);
+    }
+
+    #[test]
+    fn can_lookup_unknown_id() {
+        let albert_model = albert_model().unwrap();
+        assert_eq!(albert_model.unknown_id(), 1);
     }
 
     #[test]
