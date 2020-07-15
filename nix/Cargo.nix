@@ -88,10 +88,10 @@ rec {
       };
       "cc" = rec {
         crateName = "cc";
-        version = "1.0.57";
+        version = "1.0.58";
         edition = "2018";
         crateBin = [];
-        sha256 = "1gnyxsrj4b6f24jndx48w7zy7vmx3x9kzimvd2b4ramzlb95bphg";
+        sha256 = "065m2fphrv5csy8hvv37msi3a739mfkgw7pcg71dfw9jwnr6z87r";
         authors = [
           "Alex Crichton <alex@alexcrichton.com>"
         ];
@@ -144,9 +144,9 @@ rec {
       };
       "libc" = rec {
         crateName = "libc";
-        version = "0.2.71";
+        version = "0.2.72";
         edition = "2015";
-        sha256 = "0jbgi25rhglhvpxv62alyzyral6601kldmlhbxim4w6j15jv0mwl";
+        sha256 = "00fppyrn7l2hywqgzr6v1ysklwbk2ydrxly860di8d6mjwi0iy59";
         authors = [
           "The Rust Project Developers"
         ];
@@ -224,9 +224,9 @@ rec {
       };
       "pkg-config" = rec {
         crateName = "pkg-config";
-        version = "0.3.17";
+        version = "0.3.18";
         edition = "2015";
-        sha256 = "0xynnaxdv0gzadlw4h79j855k0q7rj4zb9xb1vk00nc6ss559nh5";
+        sha256 = "0cxc4yd9qb40944a2svgci41bws68f1hqvyljhrldwbadda94r6k";
         authors = [
           "Alex Crichton <alex@alexcrichton.com>"
         ];
@@ -486,9 +486,9 @@ rec {
       };
       "redox_syscall" = rec {
         crateName = "redox_syscall";
-        version = "0.1.56";
+        version = "0.1.57";
         edition = "2015";
-        sha256 = "110y7dyfm2vci4x5vk7gr0q551dvp31npl99fnsx2fb17wzwcf94";
+        sha256 = "1kh59fpwy33w9nwd5iyc283yglq8pf2s41hnhvl48iax9mz0zk21";
         libName = "syscall";
         authors = [
           "Jeremy Soller <jackpot51@gmail.com>"
@@ -581,9 +581,9 @@ rec {
       };
       "syn" = rec {
         crateName = "syn";
-        version = "1.0.33";
+        version = "1.0.34";
         edition = "2018";
-        sha256 = "1kdj0piws00cc0rgn2315625dfxfpxrzf6gib5lms05viipdkmg8";
+        sha256 = "16rlacv8hwpn0rc6k738sl65gyq5w7pcb5vmd4pdjh69fclawv4k";
         authors = [
           "David Tolnay <dtolnay@gmail.com>"
         ];
