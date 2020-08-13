@@ -29,9 +29,17 @@ let
       LIBCLANG_PATH = with llvmPackages; "${libclang}/lib";
     };
   };
-  buildRustCrate = pkgs.buildRustCrate.override { defaultCrateOverrides = crateOverrides; };
-  cargo_nix = pkgs.callPackage ./nix/Cargo.nix { inherit buildRustCrate; };
-in cargo_nix.rootCrate.build.override {
+  buildRustCrate = pkgs.buildRustCrate.override {
+    defaultCrateOverrides = crateOverrides;
+  };
+  crateTools = import "${sources.crate2nix}/tools.nix" {};
+  cargoNix = pkgs.callPackage (crateTools.generatedCargoNix {
+    name = "sentencepiece";
+    src = pkgs.nix-gitignore.gitignoreSource [ ".git/" "nix/" "*.nix" ] ./.;
+  }) {
+    inherit buildRustCrate;
+  };
+in cargoNix.rootCrate.build.override {
   features = [ "albert-tests" ];
   runTests = true;
 }
