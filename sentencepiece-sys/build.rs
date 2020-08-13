@@ -1,10 +1,35 @@
-fn main() {
-    let lib = pkg_config::Config::new().probe("sentencepiece").unwrap();
+use cc::Build;
 
-    let mut builder = cc::Build::new();
+fn build_sentencepiece(builder: &mut Build) {
+    let dst = cmake::build("source");
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join("build").join("src").display()
+    );
+    println!("cargo:rustc-link-lib=static=sentencepiece");
 
+    builder.include("source/src");
+}
+
+fn find_sentencepiece(builder: &mut Build) -> bool {
+    let lib = match pkg_config::Config::new().probe("sentencepiece") {
+        Ok(lib) => lib,
+        Err(_) => return false,
+    };
+
+    // Add include paths
     for i in &lib.include_paths {
         builder.include(i);
+    }
+
+    true
+}
+
+fn main() {
+    let mut builder = Build::new();
+
+    if !find_sentencepiece(&mut builder) {
+        build_sentencepiece(&mut builder);
     }
 
     builder

@@ -1,10 +1,27 @@
-name: "Test"
-on:
-  pull_request:
-  push:
+name: "Unit tests"
+
+on: [push, pull_request]
+
 jobs:
-  tests:
+  without-sentencepiece:
+    name: Without libsentencepiece
     runs-on: ubuntu-latest
+    steps:
+      - name: Install cmake and pkg-config
+        run: sudo apt-get install cmake pkg-config
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+  with-sentencepiece:
+    runs-on: ubuntu-latest
+    name: With libsentencepiece
     steps:
     - uses: actions/checkout@v1
     - uses: cachix/install-nix-action@v6
