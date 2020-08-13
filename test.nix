@@ -40,6 +40,6 @@ let
     inherit buildRustCrate;
   };
 in cargoNix.rootCrate.build.override {
-  features = [ "albert-tests" ];
+  features = [ "albert-tests" "sentencepiece-sys/system" ];
   runTests = true;
 }

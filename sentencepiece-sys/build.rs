@@ -1,4 +1,8 @@
+use std::env;
+
 use cc::Build;
+
+macro_rules! feature(($name:expr) => (env::var(concat!("CARGO_FEATURE_", $name)).is_ok()));
 
 fn build_sentencepiece(builder: &mut Build) {
     let dst = cmake::build("source");
@@ -11,24 +15,23 @@ fn build_sentencepiece(builder: &mut Build) {
     builder.include("source/src");
 }
 
-fn find_sentencepiece(builder: &mut Build) -> bool {
-    let lib = match pkg_config::Config::new().probe("sentencepiece") {
-        Ok(lib) => lib,
-        Err(_) => return false,
-    };
+fn find_sentencepiece(builder: &mut Build) {
+    let lib = pkg_config::Config::new()
+        .probe("sentencepiece")
+        .expect("Could not find sentencepiece using pkgconfig.");
 
     // Add include paths
     for i in &lib.include_paths {
         builder.include(i);
     }
-
-    true
 }
 
 fn main() {
     let mut builder = Build::new();
 
-    if !find_sentencepiece(&mut builder) {
+    if feature!("SYSTEM") {
+        find_sentencepiece(&mut builder);
+    } else {
         build_sentencepiece(&mut builder);
     }
 
