@@ -1,12 +1,9 @@
 fn main() {
     #[cfg(feature = "proto-compile")]
-    protoc_rust::run(protoc_rust::Args {
-        out_dir: "src",
-        input: &["protos/sentencepiece.proto"],
-        includes: &["protos"],
-        customize: protoc_rust::Customize {
-            ..Default::default()
-        },
-    })
-    .expect("protoc");
+    protoc_rust::Codegen::new()
+        .out_dir("src")
+        .inputs(&["protos/sentencepiece.proto"])
+        .include("protos")
+        .run()
+        .expect("protoc");
 }
