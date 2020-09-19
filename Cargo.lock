@@ -198,7 +198,7 @@ dependencies = [
 
 [[package]]
 name = "sentencepiece"
-version = "0.3.2"
+version = "0.4.0"
 dependencies = [
  "libc",
  "num-derive",
@@ -211,7 +211,7 @@ dependencies = [
 
 [[package]]
 name = "sentencepiece-sys"
-version = "0.3.2"
+version = "0.4.0"
 dependencies = [
  "cc",
  "cmake",
