@@ -10,6 +10,7 @@ in with nixpkgs; mkShell {
     cargo
     clang
     clippy
+    cmake
     pkgconfig
     protobuf
     rust-bindgen

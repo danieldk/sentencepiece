@@ -2,8 +2,24 @@
 
 This Rust crate is a binding for the
 [sentencepiece](https://github.com/google/sentencepiece) unsupervised
-text tokenizer. Installation requires that the `sentencepiece` C++
-library is installed and discoverable through `pkg-config`.
+text tokenizer. The [crate
+documentation](https://rustdoc.danieldk.eu/sentencepiece) is available
+online.
 
-The [crate documentation](https://rustdoc.danieldk.eu/sentencepiece)
-is available online.
+## `libsentencepiece` dependency
+
+This crate depends on the `sentencepiece` C++ library. By default,
+this dependency is treated as follows:
+
+* If `sentencepiece` could be found with `pkg-config`, the crate will
+  link against the library found through `pkg-config`.
+* Otherwise, the crate's build script will do a static build of the
+  `sentencepiece` library. This requires that `cmake` is available.
+
+If you wish to override this behavior, the `sentencepiece-sys` crate
+offers two features:
+
+* `system`: always attempt to link to the `sentencepiece` library
+  found with `pkg-config`.
+* `static`: always do a static build of the `sentencepiece` library
+  and link against that.
