@@ -7,6 +7,8 @@ description = "Binding for the sentencepiece tokenizer"
 repository = "https://github.com/danieldk/sentencepiece.git"
 license = "Apache-2.0"
 
+exclude = ["source/data", "source/doc", "source/python", "source/tensorflow"]
+
 [dependencies]
 
 [build-dependencies]
