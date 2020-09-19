@@ -17,6 +17,8 @@ let
     };
 
     sentencepiece-sys = attrs: {
+      features = [ "system" ];
+
       nativeBuildInputs = [
         pkgconfig
       ];

@@ -1,4 +1,8 @@
+use std::env;
+
 use cc::Build;
+
+macro_rules! feature(($name:expr) => (env::var(concat!("CARGO_FEATURE_", $name)).is_ok()));
 
 fn build_sentencepiece(builder: &mut Build) {
     let dst = cmake::build("source");
@@ -28,7 +32,9 @@ fn find_sentencepiece(builder: &mut Build) -> bool {
 fn main() {
     let mut builder = Build::new();
 
-    if !find_sentencepiece(&mut builder) {
+    if feature!("SYSTEM") {
+        find_sentencepiece(&mut builder);
+    } else if feature!("STATIC") || !find_sentencepiece(&mut builder) {
         build_sentencepiece(&mut builder);
     }
 

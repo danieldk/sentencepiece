@@ -15,3 +15,7 @@ exclude = ["source/data", "source/doc", "source/python", "source/tensorflow"]
 cc = "1"
 cmake = "0.1"
 pkg-config = "0.3"
+
+[features]
+system = []
+static = []
