@@ -12,7 +12,6 @@ in with nixpkgs; mkShell {
     clippy
     cmake
     pkgconfig
-    protobuf
     rust-bindgen
   ];
 

@@ -182,16 +182,20 @@ impl SentencePieceProcessor {
         }
 
         let proto: Vec<u8> = c_proto.to_owned();
-        let proto_pieces = protobuf::parse_from_bytes::<SentencePieceText>(&proto)
+        let sp_text: SentencePieceText = prost::Message::decode(proto.as_slice())
             .expect("Received invalid protobuf from sentencepiece");
 
-        Ok(proto_pieces
-            .get_pieces()
-            .iter()
+        // Note: consider returning an error in place of using default values.
+        Ok(sp_text
+            .pieces
+            .into_iter()
             .map(|proto_piece| PieceWithId {
-                piece: proto_piece.get_piece().to_owned(),
-                id: proto_piece.get_id(),
-                span: (proto_piece.get_begin(), proto_piece.get_end()),
+                piece: proto_piece.piece.unwrap_or_default(),
+                id: proto_piece.id.unwrap_or_default(),
+                span: (
+                    proto_piece.begin.unwrap_or_default(),
+                    proto_piece.end.unwrap_or_default(),
+                ),
             })
             .collect())
     }
