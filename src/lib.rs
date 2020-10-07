@@ -48,9 +48,21 @@ pub struct PieceWithId {
     pub span: (u32, u32),
 }
 
+#[derive(Clone, Debug, Eq, Error, PartialEq)]
+pub enum SentencePieceError {
+    #[error("sentencepiece error: {0}")]
+    CError(CSentencePieceError),
+
+    #[error("sentencepiece could not encode the text")]
+    EncodeError,
+
+    #[error("Encoded text did not contain {0}")]
+    MissingData(String),
+}
+
 /// Errors that returned by the `sentencepiece` library.
 #[derive(Clone, Copy, Debug, Eq, Error, FromPrimitive, PartialEq)]
-pub enum SentencePieceError {
+pub enum CSentencePieceError {
     #[error("Cancelled")]
     Cancelled = 1,
     #[error("Unknown")]
@@ -133,10 +145,11 @@ impl SentencePieceProcessor {
         if result == 0 {
             Ok(spp)
         } else {
-            Err(match FromPrimitive::from_i32(result as i32) {
+            let c_error = match FromPrimitive::from_i32(result as i32) {
                 Some(error) => error,
                 None => unreachable!(),
-            })
+            };
+            Err(SentencePieceError::CError(c_error))
         }
     }
 
@@ -151,10 +164,11 @@ impl SentencePieceProcessor {
         if result == 0 {
             Ok(spp)
         } else {
-            Err(match FromPrimitive::from_i32(result as i32) {
+            let c_error = match FromPrimitive::from_i32(result as i32) {
                 Some(error) => error,
                 None => unreachable!(),
-            })
+            };
+            Err(SentencePieceError::CError(c_error))
         }
     }
 
@@ -178,26 +192,37 @@ impl SentencePieceProcessor {
 
         // Errors are communicated as empty data.
         if len == 0 {
-            return Err(SentencePieceError::Internal);
+            return Err(SentencePieceError::EncodeError);
         }
 
         let proto: Vec<u8> = c_proto.to_owned();
         let sp_text: SentencePieceText = prost::Message::decode(proto.as_slice())
             .expect("Received invalid protobuf from sentencepiece");
 
-        // Note: consider returning an error in place of using default values.
+        // Most fields in the sentencepiece protobuf are optionals. Let's be
+        // defensive about absent fields for a piece.
         Ok(sp_text
             .pieces
             .into_iter()
-            .map(|proto_piece| PieceWithId {
-                piece: proto_piece.piece.unwrap_or_default(),
-                id: proto_piece.id.unwrap_or_default(),
-                span: (
-                    proto_piece.begin.unwrap_or_default(),
-                    proto_piece.end.unwrap_or_default(),
-                ),
+            .map(|proto_piece| {
+                Ok(PieceWithId {
+                    piece: proto_piece
+                        .piece
+                        .ok_or_else(|| SentencePieceError::MissingData("piece".to_string()))?,
+                    id: proto_piece
+                        .id
+                        .ok_or_else(|| SentencePieceError::MissingData("id".to_string()))?,
+                    span: (
+                        proto_piece
+                            .begin
+                            .ok_or_else(|| SentencePieceError::MissingData("begin".to_string()))?,
+                        proto_piece
+                            .end
+                            .ok_or_else(|| SentencePieceError::MissingData("end".to_string()))?,
+                    ),
+                })
             })
-            .collect())
+            .collect::<Result<_, _>>()?)
     }
 
     pub fn eos_id(&self) -> Option<u32> {
@@ -235,7 +260,7 @@ unsafe impl Sync for SentencePieceProcessor {}
 
 #[cfg(test)]
 mod tests {
-    use crate::{PieceWithId, SentencePieceError, SentencePieceProcessor};
+    use crate::{CSentencePieceError, PieceWithId, SentencePieceError, SentencePieceProcessor};
 
     fn toy_model() -> Result<SentencePieceProcessor, SentencePieceError> {
         let model_data = include_bytes!("../testdata/toy.model");
@@ -321,7 +346,7 @@ mod tests {
     fn fails_loading_nonexisting_model() {
         assert_eq!(
             SentencePieceProcessor::load("non-existing").unwrap_err(),
-            SentencePieceError::NotFound
+            SentencePieceError::CError(CSentencePieceError::NotFound)
         );
     }
 
