@@ -49,6 +49,7 @@ pub struct PieceWithId {
 }
 
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
+#[non_exhaustive]
 pub enum SentencePieceError {
     #[error("sentencepiece error: {0}")]
     CError(CSentencePieceError),
@@ -62,6 +63,7 @@ pub enum SentencePieceError {
 
 /// Errors that returned by the `sentencepiece` library.
 #[derive(Clone, Copy, Debug, Eq, Error, FromPrimitive, PartialEq)]
+#[non_exhaustive]
 pub enum CSentencePieceError {
     #[error("Cancelled")]
     Cancelled = 1,
