@@ -17,5 +17,9 @@ cmake = "0.1"
 pkg-config = "0.3"
 
 [features]
+# Static linking is the default until the following issue is resolved:
+# https://github.com/google/sentencepiece/issues/579
+default = [ "static" ]
+
 system = []
 static = []
