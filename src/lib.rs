@@ -8,7 +8,7 @@
 //! ```
 //! use sentencepiece::SentencePieceProcessor;
 //!
-//! let spp = SentencePieceProcessor::load("testdata/toy.model").unwrap();
+//! let spp = SentencePieceProcessor::open("testdata/toy.model").unwrap();
 //! let pieces = spp.encode("I saw a girl with a telescope.").unwrap()
 //!   .into_iter().map(|p| p.piece).collect::<Vec<_>>();
 //! assert_eq!(pieces, vec!["▁I", "▁saw", "▁a", "▁girl", "▁with",
@@ -18,6 +18,8 @@
 use std::ffi::{c_void, CString, NulError};
 use std::ops::{Deref, Drop};
 use std::os::raw::c_char;
+use std::os::unix::ffi::OsStrExt;
+use std::path::Path;
 use std::slice;
 
 use num_derive::FromPrimitive;
@@ -155,13 +157,15 @@ impl SentencePieceProcessor {
         }
     }
 
-    /// Load a sentencepiece model.
-    pub fn load(filename: &str) -> Result<Self, SentencePieceError> {
+    /// Open a sentencepiece model.
+    pub fn open(path: impl AsRef<Path>) -> Result<Self, SentencePieceError> {
         let spp = SentencePieceProcessor {
             inner: unsafe { spp_new() },
         };
 
-        let c_filename = CString::new(filename).unwrap();
+        // Note: `as_bytes` is not available on Windows. If we port to Windows, check
+        // what the expectations of sentencepiece are.
+        let c_filename = CString::new(path.as_ref().as_os_str().as_bytes()).unwrap();
         let result = unsafe { spp_load(spp.inner, c_filename.as_ptr()) };
         if result == 0 {
             Ok(spp)
@@ -347,7 +351,7 @@ mod tests {
     #[test]
     fn fails_loading_nonexisting_model() {
         assert_eq!(
-            SentencePieceProcessor::load("non-existing").unwrap_err(),
+            SentencePieceProcessor::open("non-existing").unwrap_err(),
             SentencePieceError::CError(CSentencePieceError::NotFound)
         );
     }
@@ -390,7 +394,7 @@ mod albert_tests {
 
     fn albert_model() -> Result<SentencePieceProcessor, SentencePieceError> {
         let model_path = env!("ALBERT_BASE_MODEL");
-        SentencePieceProcessor::load(model_path)
+        SentencePieceProcessor::open(model_path)
     }
 
     #[test]
