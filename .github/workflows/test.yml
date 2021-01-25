@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     name: With libsentencepiece
     steps:
-    - uses: actions/checkout@v1
-    - uses: cachix/install-nix-action@v6
-    - uses: cachix/cachix-action@v3
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v12
+    - uses: cachix/cachix-action@v8
       with:
         name: sticker
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-        file: test.nix
+    - run: nix-build test.nix
