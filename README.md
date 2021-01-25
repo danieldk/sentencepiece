@@ -12,7 +12,10 @@ This crate depends on the `sentencepiece` C++ library. By default,
 this dependency is treated as follows:
 
 * If `sentencepiece` could be found with `pkg-config`, the crate will
-  link against the library found through `pkg-config`.
+  link against the library found through `pkg-config`. **Warning:**
+  dynamic linking only works correctly with sentencepiece 0.1.95
+  or later, due to
+  [a bug in earlier versions](https://github.com/google/sentencepiece/issues/579).
 * Otherwise, the crate's build script will do a static build of the
   `sentencepiece` library. This requires that `cmake` is available.
 
