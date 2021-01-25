@@ -9,6 +9,8 @@ let
   };
   crateOverrides = with pkgs; defaultCrateOverrides // {
     sentencepiece = attrs: {
+      buildInputs = [ sentencepiece ];
+
       # Model path for model tests.
       ALBERT_BASE_MODEL = "${albertBase}";
 
