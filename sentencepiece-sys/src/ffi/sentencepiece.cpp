@@ -23,13 +23,13 @@ SentencePieceProcessor *spp_new() {
   return new SentencePieceProcessor();
 }
 
-
 int spp_bos_id(SentencePieceProcessor *spp) {
   return spp->bos_id();
 }
 
-unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t *len) {
-  auto serialized = spp->EncodeAsSerializedProto(sentence);
+unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len) {
+  auto sentence_view = absl::string_view(sentence, sentence_len);
+  auto serialized = spp->EncodeAsSerializedProto(sentence_view);
 
   *len = serialized.size();
   unsigned char *data = (unsigned char *) malloc(serialized.size());

@@ -9,7 +9,7 @@ typedef struct SentencePieceProcessor SentencePieceProcessor;
 
 typedef struct SentencePieceText SentencePieceText;
 
-unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t *len);
+unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len);
 
 SentencePieceProcessor *spp_new();
 

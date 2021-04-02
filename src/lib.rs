@@ -189,11 +189,15 @@ impl SentencePieceProcessor {
 
     /// Tokenizer a sentence.
     pub fn encode(&self, sentence: &str) -> Result<Vec<PieceWithId>, SentencePieceError> {
-        let c_sentence = CString::new(sentence).unwrap();
-
         let mut len = 0u64;
-        let c_proto =
-            unsafe { spp_encode_as_serialized_proto(self.inner, c_sentence.as_ptr(), &mut len) };
+        let c_proto = unsafe {
+            spp_encode_as_serialized_proto(
+                self.inner,
+                sentence.as_bytes().as_ptr() as *const i8,
+                sentence.as_bytes().len() as u64,
+                &mut len,
+            )
+        };
         let c_proto = CData { data: c_proto, len };
 
         // Errors are communicated as empty data.
@@ -353,6 +357,46 @@ mod tests {
         assert_eq!(
             SentencePieceProcessor::open("non-existing").unwrap_err(),
             SentencePieceError::CError(CSentencePieceError::NotFound)
+        );
+    }
+
+    #[test]
+    fn handles_nul_character() {
+        let model = toy_model().unwrap();
+        assert_eq!(
+            model.encode("Test\0 nul").unwrap(),
+            vec![
+                PieceWithId {
+                    piece: "▁T".to_string(),
+                    id: 239,
+                    span: (0, 1)
+                },
+                PieceWithId {
+                    piece: "est".to_string(),
+                    id: 382,
+                    span: (1, 4)
+                },
+                PieceWithId {
+                    piece: "\u{0}".to_string(),
+                    id: 0,
+                    span: (4, 5)
+                },
+                PieceWithId {
+                    piece: "▁".to_string(),
+                    id: 7,
+                    span: (5, 6)
+                },
+                PieceWithId {
+                    piece: "n".to_string(),
+                    id: 24,
+                    span: (6, 7)
+                },
+                PieceWithId {
+                    piece: "ul".to_string(),
+                    id: 231,
+                    span: (7, 9)
+                }
+            ]
         );
     }
 
