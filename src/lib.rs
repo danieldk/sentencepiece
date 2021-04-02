@@ -211,7 +211,7 @@ impl SentencePieceProcessor {
 
         // Most fields in the sentencepiece protobuf are optionals. Let's be
         // defensive about absent fields for a piece.
-        Ok(sp_text
+        sp_text
             .pieces
             .into_iter()
             .map(|proto_piece| {
@@ -232,7 +232,7 @@ impl SentencePieceProcessor {
                     ),
                 })
             })
-            .collect::<Result<_, _>>()?)
+            .collect::<Result<_, _>>()
     }
 
     pub fn eos_id(&self) -> Option<u32> {
