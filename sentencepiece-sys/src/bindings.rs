@@ -64,6 +64,7 @@ extern "C" {
     pub fn spp_encode_as_serialized_proto(
         spp: *mut SentencePieceProcessor,
         sentence: *const ::std::os::raw::c_char,
+        sentence_len: size_t,
         len: *mut size_t,
     ) -> *mut ::std::os::raw::c_uchar;
 }
