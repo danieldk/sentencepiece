@@ -19,7 +19,7 @@ use std::ffi::{c_void, CString, NulError};
 use std::ops::{Deref, Drop};
 use std::os::raw::c_char;
 use std::os::unix::ffi::OsStrExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::slice;
 
 use num_derive::FromPrimitive;
@@ -58,6 +58,9 @@ pub enum SentencePieceError {
 
     #[error("sentencepiece could not encode the text")]
     EncodeError,
+
+    #[error("Filename contains nul: {0}")]
+    FilenameContainsNul(PathBuf),
 
     #[error("Encoded text did not contain {0}")]
     MissingData(String),
@@ -165,7 +168,9 @@ impl SentencePieceProcessor {
 
         // Note: `as_bytes` is not available on Windows. If we port to Windows, check
         // what the expectations of sentencepiece are.
-        let c_filename = CString::new(path.as_ref().as_os_str().as_bytes()).unwrap();
+        let c_filename = CString::new(path.as_ref().as_os_str().as_bytes())
+            .map_err(|_| SentencePieceError::FilenameContainsNul(path.as_ref().to_owned()))?;
+
         let result = unsafe { spp_load(spp.inner, c_filename.as_ptr()) };
         if result == 0 {
             Ok(spp)
@@ -270,6 +275,8 @@ unsafe impl Sync for SentencePieceProcessor {}
 
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
+
     use crate::{CSentencePieceError, PieceWithId, SentencePieceError, SentencePieceProcessor};
 
     fn toy_model() -> Result<SentencePieceProcessor, SentencePieceError> {
@@ -349,6 +356,15 @@ mod tests {
                     span: (29, 30)
                 }
             ]
+        );
+    }
+
+    #[test]
+    fn errors_on_path_with_nul() {
+        let test_path = Path::new("test\0path");
+        assert_eq!(
+            SentencePieceProcessor::open(test_path).unwrap_err(),
+            SentencePieceError::FilenameContainsNul(test_path.to_owned())
         );
     }
 
