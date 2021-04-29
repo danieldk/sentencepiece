@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: libc
+    versions:
+    - 0.2.85
+    - 0.2.87
+    - 0.2.88
+    - 0.2.89
+    - 0.2.90
+    - 0.2.91
+    - 0.2.93
+  - dependency-name: thiserror
+    versions:
+    - 1.0.23
