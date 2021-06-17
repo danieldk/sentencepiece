@@ -1,6 +1,6 @@
 [package]
 name = "sentencepiece"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
@@ -15,7 +15,7 @@ num-derive = "0.3"
 num-traits = "0.2"
 prost = "0.7"
 prost-derive = "0.7"
-sentencepiece-sys = { path = "sentencepiece-sys", version = "0.7.0" }
+sentencepiece-sys = { path = "sentencepiece-sys", version = "0.7.1" }
 thiserror = "1"
 
 [features]
