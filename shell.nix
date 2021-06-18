@@ -4,7 +4,6 @@
 let
   sources = import ./nix/sources.nix;
   nixpkgs = import sources.nixpkgs {};
-  danieldk = nixpkgs.callPackage sources.danieldk {};
 in with nixpkgs; mkShell {
   nativeBuildInputs = with nixpkgs; [
     cargo
