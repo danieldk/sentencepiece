@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   without-sentencepiece:
-    name: Without libsentencepiece
+    name: Test without libsentencepiece
     runs-on: ubuntu-latest
     steps:
       - name: Install cmake and pkg-config
@@ -19,14 +19,4 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
-  with-sentencepiece:
-    runs-on: ubuntu-latest
-    name: With libsentencepiece
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cachix/install-nix-action@v12
-    - uses: cachix/cachix-action@v8
-      with:
-        name: sticker
-        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - run: nix-build test.nix
+      - run: scripts/test-all.sh
