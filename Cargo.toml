@@ -7,7 +7,7 @@ description = "Binding for the sentencepiece tokenizer"
 repository = "https://github.com/danieldk/sentencepiece.git"
 documentation = "https://rustdoc.danieldk.eu/sentencepiece"
 license = "MIT OR Apache-2.0"
-exclude = ["shell.nix"]
+exclude = ["shell.nix", "testdata/albert-base-v1-spiece.model"]
 
 [dependencies]
 libc = "0.2"

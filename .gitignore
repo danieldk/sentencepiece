@@ -5,3 +5,5 @@ sentencepiece-sys/Cargo.lock
 .*
 
 result*
+
+testdata/albert-base-v1-spiece.model
