@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <type_traits>
@@ -25,6 +26,24 @@ SentencePieceProcessor *spp_new() {
 
 int spp_bos_id(SentencePieceProcessor *spp) {
   return spp->bos_id();
+}
+
+int spp_decode_piece_ids(SentencePieceProcessor *spp, uint32_t const *pieces, size_t pieces_len, unsigned char **decoded, size_t *decoded_len) {
+    std::vector<int> int_pieces;
+    int_pieces.reserve(pieces_len);
+
+    for (uint32_t const *piece = pieces; piece != pieces + pieces_len; ++piece) {
+        int_pieces.push_back(static_cast<int>(*piece));
+    }
+
+    std::string decoded_string;
+    auto status = spp->Decode(int_pieces, &decoded_string);
+
+    *decoded_len = decoded_string.size();
+    *decoded = static_cast<unsigned char *>(malloc(decoded_string.size()));
+    memcpy(*decoded, decoded_string.data(), decoded_string.size());
+
+    return to_underlying_type(status.code());
 }
 
 unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len) {

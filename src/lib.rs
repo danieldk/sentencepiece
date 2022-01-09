@@ -27,8 +27,8 @@ use num_traits::FromPrimitive;
 use thiserror::Error;
 
 use sentencepiece_sys::{
-    spp_bos_id, spp_encode_as_serialized_proto, spp_eos_id, spp_free, spp_from_serialized_proto,
-    spp_is_unknown, spp_load, spp_new, spp_piece_to_id, spp_unknown_id,
+    size_t, spp_bos_id, spp_decode_piece_ids, spp_encode_as_serialized_proto, spp_eos_id, spp_free,
+    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_piece_to_id, spp_unknown_id,
     SentencePieceProcessor as CSentencePieceProcessor,
 };
 
@@ -192,7 +192,41 @@ impl SentencePieceProcessor {
         }
     }
 
-    /// Tokenizer a sentence.
+    /// Decode a sentence from piece identifiers.
+    pub fn decode_piece_ids(&self, pieces: &[u32]) -> Result<String, SentencePieceError> {
+        let mut decoded = std::ptr::null_mut::<u8>();
+        let mut decoded_len: size_t = 0;
+
+        let status = unsafe {
+            spp_decode_piece_ids(
+                self.inner,
+                pieces.as_ptr(),
+                pieces.len() as size_t,
+                &mut decoded,
+                &mut decoded_len,
+            )
+        };
+
+        let c_str = CData {
+            data: decoded,
+            len: decoded_len,
+        };
+
+        if status == 0 {
+            let decoded_string = String::from_utf8(c_str.to_owned())
+                .expect("Decoded sentence is not UTF-8, please report this bug.");
+
+            Ok(decoded_string)
+        } else {
+            let c_error = match FromPrimitive::from_i32(status as i32) {
+                Some(error) => error,
+                None => unreachable!(),
+            };
+            Err(SentencePieceError::CError(c_error))
+        }
+    }
+
+    /// Encode a sentence as sentence pieces and their identifiers.
     pub fn encode(&self, sentence: &str) -> Result<Vec<PieceWithId>, SentencePieceError> {
         let mut len = 0u64;
         let c_proto = unsafe {
@@ -282,6 +316,24 @@ mod tests {
     fn toy_model() -> Result<SentencePieceProcessor, SentencePieceError> {
         let model_data = include_bytes!("../testdata/toy.model");
         SentencePieceProcessor::from_serialized_proto(model_data)
+    }
+
+    #[test]
+    fn decodes_sentence_with_toy_model() {
+        let model = toy_model().unwrap();
+        let decoded = model
+            .decode_piece_ids(&[8, 465, 10, 947, 41, 10, 170, 168, 110, 28, 20, 143, 4])
+            .unwrap();
+        assert_eq!(decoded, "I saw a girl with a telescope.");
+    }
+
+    #[test]
+    fn decode_with_incorrect_identifier_fails() {
+        let model = toy_model().unwrap();
+        assert_eq!(
+            model.decode_piece_ids(&[8, 1000]),
+            Err(SentencePieceError::CError(CSentencePieceError::OutOfRange))
+        );
     }
 
     #[test]
@@ -473,6 +525,20 @@ mod albert_tests {
     fn can_lookup_unknown_id() {
         let albert_model = albert_model().unwrap();
         assert_eq!(albert_model.unknown_id(), 1);
+    }
+
+    #[test]
+    fn decodes_sentence_with_albert_model() {
+        let model = albert_model().unwrap();
+        let decoded = model
+            .decode_piece_ids(&[
+                13, 1, 1514, 102, 1276, 3066, 20, 25277, 21000, 16689, 18, 26, 3784, 9,
+            ])
+            .unwrap();
+        assert_eq!(
+            decoded,
+            " ⁇ ardly anyone attempted to decipher hieroglyphs for decades."
+        );
     }
 
     #[test]
