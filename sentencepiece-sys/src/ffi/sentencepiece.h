@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,6 +9,8 @@ extern "C" {
 typedef struct SentencePieceProcessor SentencePieceProcessor;
 
 typedef struct SentencePieceText SentencePieceText;
+
+int spp_decode_piece_ids(SentencePieceProcessor *spp, uint32_t const *pieces, size_t pieces_len, unsigned char **decoded, size_t *decoded_len);
 
 unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len);
 
