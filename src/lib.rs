@@ -232,7 +232,7 @@ impl SentencePieceProcessor {
         let c_proto = unsafe {
             spp_encode_as_serialized_proto(
                 self.inner,
-                sentence.as_bytes().as_ptr() as *const i8,
+                sentence.as_ptr() as *const c_char,
                 sentence.as_bytes().len() as u64,
                 &mut len,
             )
