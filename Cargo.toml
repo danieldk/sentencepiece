@@ -13,8 +13,8 @@ exclude = ["testdata/albert-base-v1-spiece.model"]
 libc = "0.2"
 num-derive = "0.3"
 num-traits = "0.2"
-prost = "0.9"
-prost-derive = "0.9"
+prost = "0.11"
+prost-derive = "0.11"
 sentencepiece-sys = { path = "sentencepiece-sys", version = "0.8.1" }
 thiserror = "1"
 
