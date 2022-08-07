@@ -23,12 +23,13 @@ use std::path::{Path, PathBuf};
 use std::slice;
 
 use num_derive::FromPrimitive;
-use num_traits::FromPrimitive;
+use num_traits::{FromPrimitive, Signed};
 use thiserror::Error;
 
 use sentencepiece_sys::{
     size_t, spp_bos_id, spp_decode_piece_ids, spp_encode_as_serialized_proto, spp_eos_id, spp_free,
-    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_piece_to_id, spp_unknown_id,
+    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_piece_to_id,
+    spp_sample_encode_as_serialized_proto, spp_unknown_id,
     SentencePieceProcessor as CSentencePieceProcessor,
 };
 
@@ -237,10 +238,34 @@ impl SentencePieceProcessor {
                 &mut len,
             )
         };
-        let c_proto = CData { data: c_proto, len };
 
+        Self::process_encode_protobuf(CData { data: c_proto, len })
+    }
+
+    pub fn eos_id(&self) -> Option<u32> {
+        let eos_id = unsafe { spp_eos_id(self.inner) };
+        if eos_id < 0 {
+            None
+        } else {
+            Some(eos_id as u32)
+        }
+    }
+
+    /// Get the identifier of a sentence piece.
+    pub fn piece_to_id(&self, piece: &str) -> Result<Option<u32>, NulError> {
+        let c_piece = CString::new(piece.as_bytes())?;
+        let id = unsafe { spp_piece_to_id(self.inner, c_piece.as_ptr()) };
+
+        if unsafe { spp_is_unknown(self.inner, id) } {
+            Ok(None)
+        } else {
+            Ok(Some(id as u32))
+        }
+    }
+
+    fn process_encode_protobuf(c_proto: CData) -> Result<Vec<PieceWithId>, SentencePieceError> {
         // Errors are communicated as empty data.
-        if len == 0 {
+        if c_proto.len() == 0 {
             return Err(SentencePieceError::EncodeError);
         }
 
@@ -274,25 +299,35 @@ impl SentencePieceProcessor {
             .collect::<Result<_, _>>()
     }
 
-    pub fn eos_id(&self) -> Option<u32> {
-        let eos_id = unsafe { spp_eos_id(self.inner) };
-        if eos_id < 0 {
-            None
-        } else {
-            Some(eos_id as u32)
-        }
-    }
+    /// Encode a sentence using sampling (subword regularization).
+    ///
+    /// Sample for the `n_best` segmentations, where alpha controls the
+    /// smoothness of the distribution.
+    ///
+    /// This method panics when `n_best > 512` or when alpha is not a (normal)
+    /// positive floating point number.
+    pub fn sample_encode(
+        &self,
+        sentence: &str,
+        n_best: usize,
+        alpha: f32,
+    ) -> Result<Vec<PieceWithId>, SentencePieceError> {
+        assert!(n_best <= 512);
+        assert!(alpha.is_normal() && alpha.is_positive());
 
-    /// Get the identifier of a sentence piece.
-    pub fn piece_to_id(&self, piece: &str) -> Result<Option<u32>, NulError> {
-        let c_piece = CString::new(piece.as_bytes())?;
-        let id = unsafe { spp_piece_to_id(self.inner, c_piece.as_ptr()) };
+        let mut len = 0u64;
+        let c_proto = unsafe {
+            spp_sample_encode_as_serialized_proto(
+                self.inner,
+                sentence.as_ptr() as *const c_char,
+                sentence.as_bytes().len() as u64,
+                &mut len,
+                n_best as size_t,
+                alpha,
+            )
+        };
 
-        if unsafe { spp_is_unknown(self.inner, id) } {
-            Ok(None)
-        } else {
-            Ok(Some(id as u32))
-        }
+        Self::process_encode_protobuf(CData { data: c_proto, len })
     }
 
     pub fn unknown_id(&self) -> u32 {
@@ -409,6 +444,39 @@ mod tests {
                 }
             ]
         );
+    }
+
+    #[test]
+    fn sample_encodes_sentence_with_toy_model() {
+        let model = toy_model().unwrap();
+        let pieces = model
+            .sample_encode("I saw a girl with a telescope.", 10, 0.5)
+            .unwrap();
+        // Since sampling is randomized, we cannot check the output,
+        // instead check that we can decode the result.
+        let pieces = pieces.iter().map(|p| p.id).collect::<Vec<_>>();
+        assert_eq!(
+            model.decode_piece_ids(&pieces).unwrap(),
+            "I saw a girl with a telescope."
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn sample_encode_with_incorrect_alpha_fails() {
+        let model = toy_model().unwrap();
+        model
+            .sample_encode("I saw a girl with a telescope.", 10, 0.0)
+            .unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn sample_encode_with_incorrect_n_best_fails() {
+        let model = toy_model().unwrap();
+        model
+            .sample_encode("I saw a girl with a telescope.", 513, 0.1)
+            .unwrap();
     }
 
     #[test]

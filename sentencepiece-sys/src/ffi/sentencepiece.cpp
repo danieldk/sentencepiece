@@ -57,6 +57,18 @@ unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char 
   return data;
 }
 
+
+unsigned char *spp_sample_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len, size_t nbest, float alpha) {
+  auto sentence_view = absl::string_view(sentence, sentence_len);
+  auto serialized = spp->SampleEncodeAsSerializedProto(sentence_view, static_cast<int>(nbest), alpha);
+
+  *len = serialized.size();
+  unsigned char *data = (unsigned char *) malloc(serialized.size());
+  memcpy(data, serialized.data(), serialized.size());
+
+  return data;
+}
+
 int spp_eos_id(SentencePieceProcessor *spp) {
   return spp->eos_id();
 }

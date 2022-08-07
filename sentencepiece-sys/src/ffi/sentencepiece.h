@@ -14,6 +14,8 @@ int spp_decode_piece_ids(SentencePieceProcessor *spp, uint32_t const *pieces, si
 
 unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len);
 
+unsigned char *spp_sample_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len, size_t nbest, float alpha);
+
 SentencePieceProcessor *spp_new();
 
 int spp_from_serialized_proto(SentencePieceProcessor *spp, char const *data, size_t len);
