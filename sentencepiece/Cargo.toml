@@ -1,0 +1,22 @@
+[package]
+name = "sentencepiece"
+version = "0.8.2"
+authors = ["Daniël de Kok <me@danieldk.eu>"]
+edition = "2018"
+description = "Binding for the sentencepiece tokenizer"
+repository = "https://github.com/danieldk/sentencepiece.git"
+documentation = "https://rustdoc.danieldk.eu/sentencepiece"
+license = "MIT OR Apache-2.0"
+exclude = ["testdata/albert-base-v1-spiece.model"]
+
+[dependencies]
+libc = "0.2"
+num-derive = "0.3"
+num-traits = "0.2"
+prost = "0.11"
+prost-derive = "0.11"
+sentencepiece-sys = { path = "../sentencepiece-sys", version = "0.8.1" }
+thiserror = "1"
+
+[features]
+albert-tests = []

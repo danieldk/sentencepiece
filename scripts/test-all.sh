@@ -8,7 +8,8 @@ if ! [ -x "$(command -v curl)" ] ; then
   exit 1
 fi
 
-cache_dir=testdata
+cache_dir=sentencepiece/testdata
+test_dir=testdata
 
 declare -A models=(
   ["ALBERT_BASE_MODEL"]="https://s3.amazonaws.com/models.huggingface.co/bert/albert-base-v1-spiece.model")
@@ -19,13 +20,14 @@ fi
 
 for var in "${!models[@]}"; do
   url="${models[$var]}"
-  data="${cache_dir}/$(basename "${url}")"
+  bn="$(basename "${url}")"
+  data="${cache_dir}/${bn}"
 
   if [ ! -e "${data}" ]; then
     curl -fo "${data}" "${url}"
   fi
 
-  declare -x "${var}"="${data}"
+  declare -x "${var}"="${test_dir}/${bn}"
 done
 
 cargo test --features albert-tests
