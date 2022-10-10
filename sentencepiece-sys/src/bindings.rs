@@ -860,6 +860,9 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
+    pub fn spp_piece_size(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
+}
+extern "C" {
     pub fn spp_unknown_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
 }
 pub type __builtin_va_list = *mut ::std::os::raw::c_char;
