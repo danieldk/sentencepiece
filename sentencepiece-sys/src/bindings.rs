@@ -830,6 +830,12 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
+    pub fn spp_to_serialized_proto(
+        spp: *mut SentencePieceProcessor,
+        len: *mut size_t,
+    ) -> *mut ::std::os::raw::c_uchar;
+}
+extern "C" {
     pub fn spp_load(
         spp: *mut SentencePieceProcessor,
         filename: *const ::std::os::raw::c_char,

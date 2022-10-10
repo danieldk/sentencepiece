@@ -29,7 +29,7 @@ use thiserror::Error;
 use sentencepiece_sys::{
     size_t, spp_bos_id, spp_decode_piece_ids, spp_encode_as_serialized_proto, spp_eos_id, spp_free,
     spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_piece_to_id,
-    spp_sample_encode_as_serialized_proto, spp_unknown_id,
+    spp_sample_encode_as_serialized_proto, spp_to_serialized_proto, spp_unknown_id,
     SentencePieceProcessor as CSentencePieceProcessor,
 };
 
@@ -159,6 +159,16 @@ impl SentencePieceProcessor {
             };
             Err(SentencePieceError::CError(c_error))
         }
+    }
+
+    /// Serialize the model to protobuf.
+    pub fn to_serialized_proto(&self) -> Vec<u8> {
+        let mut len = 0;
+        let data = unsafe { spp_to_serialized_proto(self.inner, &mut len) };
+
+        let c_str = CData { data, len };
+
+        c_str.to_owned()
     }
 
     /// Open a sentencepiece model.
@@ -348,9 +358,12 @@ mod tests {
 
     use crate::{CSentencePieceError, PieceWithId, SentencePieceError, SentencePieceProcessor};
 
+    fn toy_model_proto() -> &'static [u8] {
+        include_bytes!("../testdata/toy.model")
+    }
+
     fn toy_model() -> Result<SentencePieceProcessor, SentencePieceError> {
-        let model_data = include_bytes!("../testdata/toy.model");
-        SentencePieceProcessor::from_serialized_proto(model_data)
+        SentencePieceProcessor::from_serialized_proto(toy_model_proto())
     }
 
     #[test]
@@ -564,6 +577,14 @@ mod tests {
     fn can_lookup_unknown_id() {
         let toy_model = toy_model().unwrap();
         assert_eq!(toy_model.unknown_id(), 0);
+    }
+
+    #[test]
+    fn protobuf_roundtrip_is_identical() {
+        let protobuf = toy_model_proto();
+        let spp = SentencePieceProcessor::from_serialized_proto(protobuf).unwrap();
+        let protobuf_roundtrip = spp.to_serialized_proto();
+        assert_eq!(protobuf, protobuf_roundtrip);
     }
 }
 
