@@ -82,6 +82,10 @@ bool spp_is_unknown(SentencePieceProcessor *spp, int id) {
   return spp->IsUnknown(id);
 }
 
+int spp_piece_size(SentencePieceProcessor *spp) {
+  return spp->GetPieceSize();
+}
+
 int spp_piece_to_id(SentencePieceProcessor *spp, char const *piece) {
   return spp->PieceToId(piece);
 }

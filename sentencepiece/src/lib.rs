@@ -28,7 +28,7 @@ use thiserror::Error;
 
 use sentencepiece_sys::{
     size_t, spp_bos_id, spp_decode_piece_ids, spp_encode_as_serialized_proto, spp_eos_id, spp_free,
-    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_piece_to_id,
+    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_piece_size, spp_piece_to_id,
     spp_sample_encode_as_serialized_proto, spp_to_serialized_proto, spp_unknown_id,
     SentencePieceProcessor as CSentencePieceProcessor,
 };
@@ -259,6 +259,16 @@ impl SentencePieceProcessor {
         } else {
             Some(eos_id as u32)
         }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    pub fn len(&self) -> usize {
+        let len = unsafe { spp_piece_size(self.inner) };
+        assert!(len >= 0);
+        len as usize
     }
 
     /// Get the identifier of a sentence piece.
@@ -577,6 +587,12 @@ mod tests {
     fn can_lookup_unknown_id() {
         let toy_model = toy_model().unwrap();
         assert_eq!(toy_model.unknown_id(), 0);
+    }
+
+    #[test]
+    fn model_has_correct_len() {
+        let model = toy_model().unwrap();
+        assert_eq!(model.len(), 1000);
     }
 
     #[test]
