@@ -20,6 +20,8 @@ SentencePieceProcessor *spp_new();
 
 int spp_from_serialized_proto(SentencePieceProcessor *spp, char const *data, size_t len);
 
+unsigned char *spp_to_serialized_proto(SentencePieceProcessor *spp, size_t *len);
+
 int spp_load(SentencePieceProcessor *spp, char const *filename);
 
 void spp_free(SentencePieceProcessor *spp);

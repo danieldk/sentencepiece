@@ -91,6 +91,16 @@ int spp_from_serialized_proto(SentencePieceProcessor *spp, char const *data, siz
   return to_underlying_type(status.code());
 }
 
+unsigned char *spp_to_serialized_proto(SentencePieceProcessor *spp, size_t *len) {
+  auto serialized = spp->serialized_model_proto();
+
+  *len = serialized.size();
+  unsigned char *data = (unsigned char *) malloc(serialized.size());
+  memcpy(data, serialized.data(), serialized.size());
+
+  return data;
+}
+
 void spp_free(SentencePieceProcessor *spp) {
   delete spp;
 }
