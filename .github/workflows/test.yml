@@ -5,10 +5,14 @@ on: [push, pull_request]
 jobs:
   without-sentencepiece:
     name: Test without libsentencepiece
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Install cmake and pkg-config
         run: sudo apt-get install cmake pkg-config
+        if: runner.os == 'Linux'
       - uses: actions/checkout@v2
         with:
           submodules: true
