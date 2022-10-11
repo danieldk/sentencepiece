@@ -82,6 +82,10 @@ bool spp_is_unknown(SentencePieceProcessor *spp, int id) {
   return spp->IsUnknown(id);
 }
 
+int spp_pad_id(SentencePieceProcessor *spp) {
+  return spp->pad_id();
+}
+
 int spp_piece_size(SentencePieceProcessor *spp) {
   return spp->GetPieceSize();
 }
@@ -109,7 +113,7 @@ void spp_free(SentencePieceProcessor *spp) {
   delete spp;
 }
 
-int spp_unknown_id(SentencePieceProcessor *spp) {
+int spp_unk_id(SentencePieceProcessor *spp) {
   return spp->unk_id();
 }
 

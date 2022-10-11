@@ -28,8 +28,8 @@ use thiserror::Error;
 
 use sentencepiece_sys::{
     size_t, spp_bos_id, spp_decode_piece_ids, spp_encode_as_serialized_proto, spp_eos_id, spp_free,
-    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_piece_size, spp_piece_to_id,
-    spp_sample_encode_as_serialized_proto, spp_to_serialized_proto, spp_unknown_id,
+    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_pad_id, spp_piece_size,
+    spp_piece_to_id, spp_sample_encode_as_serialized_proto, spp_to_serialized_proto, spp_unk_id,
     SentencePieceProcessor as CSentencePieceProcessor,
 };
 
@@ -271,6 +271,15 @@ impl SentencePieceProcessor {
         len as usize
     }
 
+    pub fn pad_id(&self) -> Option<u32> {
+        let pad_id = unsafe { spp_pad_id(self.inner) };
+        if pad_id < 0 {
+            None
+        } else {
+            Some(pad_id as u32)
+        }
+    }
+
     /// Get the identifier of a sentence piece.
     pub fn piece_to_id(&self, piece: &str) -> Result<Option<u32>, NulError> {
         let c_piece = CString::new(piece.as_bytes())?;
@@ -350,8 +359,11 @@ impl SentencePieceProcessor {
         Self::process_encode_protobuf(CData { data: c_proto, len })
     }
 
-    pub fn unknown_id(&self) -> u32 {
-        unsafe { spp_unknown_id(self.inner) as u32 }
+    pub fn unk_id(&self) -> u32 {
+        let unk_id = unsafe { spp_unk_id(self.inner) };
+        // unk_id must always be present.
+        assert!(unk_id >= 0);
+        unk_id as u32
     }
 }
 
@@ -584,9 +596,16 @@ mod tests {
     }
 
     #[test]
-    fn can_lookup_unknown_id() {
+    fn can_lookup_pad_id() {
         let toy_model = toy_model().unwrap();
-        assert_eq!(toy_model.unknown_id(), 0);
+        // Fixme: the toy model was trained without a padding index.
+        assert_eq!(toy_model.pad_id(), None);
+    }
+
+    #[test]
+    fn can_lookup_unk_id() {
+        let toy_model = toy_model().unwrap();
+        assert_eq!(toy_model.unk_id(), 0);
     }
 
     #[test]
@@ -627,9 +646,9 @@ mod albert_tests {
     }
 
     #[test]
-    fn can_lookup_unknown_id() {
+    fn can_lookup_unk_id() {
         let albert_model = albert_model().unwrap();
-        assert_eq!(albert_model.unknown_id(), 1);
+        assert_eq!(albert_model.unk_id(), 1);
     }
 
     #[test]
