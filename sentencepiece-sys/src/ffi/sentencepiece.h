@@ -32,11 +32,13 @@ int spp_eos_id(SentencePieceProcessor *spp);
 
 bool spp_is_unknown(SentencePieceProcessor *spp, int id);
 
+int spp_pad_id(SentencePieceProcessor *spp);
+
 int spp_piece_to_id(SentencePieceProcessor *spp, char const *piece);
 
 int spp_piece_size(SentencePieceProcessor *spp);
 
-int spp_unknown_id(SentencePieceProcessor *spp);
+int spp_unk_id(SentencePieceProcessor *spp);
 
 #ifdef __cplusplus
 }

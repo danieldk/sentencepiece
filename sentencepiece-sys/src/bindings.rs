@@ -854,6 +854,9 @@ extern "C" {
     pub fn spp_is_unknown(spp: *mut SentencePieceProcessor, id: ::std::os::raw::c_int) -> bool;
 }
 extern "C" {
+    pub fn spp_pad_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
+}
+extern "C" {
     pub fn spp_piece_to_id(
         spp: *mut SentencePieceProcessor,
         piece: *const ::std::os::raw::c_char,
@@ -863,6 +866,6 @@ extern "C" {
     pub fn spp_piece_size(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn spp_unknown_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
+    pub fn spp_unk_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
 }
 pub type __builtin_va_list = *mut ::std::os::raw::c_char;
