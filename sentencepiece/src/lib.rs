@@ -27,10 +27,10 @@ use num_traits::{FromPrimitive, Signed};
 use thiserror::Error;
 
 use sentencepiece_sys::{
-    size_t, spp_bos_id, spp_decode_piece_ids, spp_encode_as_serialized_proto, spp_eos_id, spp_free,
-    spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_pad_id, spp_piece_size,
-    spp_piece_to_id, spp_sample_encode_as_serialized_proto, spp_to_serialized_proto, spp_unk_id,
-    SentencePieceProcessor as CSentencePieceProcessor,
+    size_t, spp_bos_id, spp_decode_piece_ids, spp_decode_pieces, spp_encode_as_serialized_proto,
+    spp_eos_id, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_pad_id,
+    spp_piece_size, spp_piece_to_id, spp_sample_encode_as_serialized_proto,
+    spp_to_serialized_proto, spp_unk_id, SentencePieceProcessor as CSentencePieceProcessor,
 };
 
 mod sentencepiece;
@@ -65,6 +65,9 @@ pub enum SentencePieceError {
 
     #[error("Encoded text did not contain {0}")]
     MissingData(String),
+
+    #[error("Piece contains nul byte")]
+    PieceContainsNul,
 }
 
 /// Errors that returned by the `sentencepiece` library.
@@ -213,6 +216,49 @@ impl SentencePieceProcessor {
                 self.inner,
                 pieces.as_ptr(),
                 pieces.len() as size_t,
+                &mut decoded,
+                &mut decoded_len,
+            )
+        };
+
+        let c_str = CData {
+            data: decoded,
+            len: decoded_len,
+        };
+
+        if status == 0 {
+            let decoded_string = String::from_utf8(c_str.to_owned())
+                .expect("Decoded sentence is not UTF-8, please report this bug.");
+
+            Ok(decoded_string)
+        } else {
+            let c_error = match FromPrimitive::from_i32(status as i32) {
+                Some(error) => error,
+                None => unreachable!(),
+            };
+            Err(SentencePieceError::CError(c_error))
+        }
+    }
+
+    pub fn decode_pieces(&self, pieces: &[impl AsRef<str>]) -> Result<String, SentencePieceError> {
+        let mut decoded = std::ptr::null_mut::<u8>();
+        let mut decoded_len: size_t = 0;
+
+        let owned_c_pieces = pieces
+            .iter()
+            .map(|piece| CString::new(piece.as_ref()))
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|_| SentencePieceError::PieceContainsNul)?;
+        let c_pieces = owned_c_pieces
+            .iter()
+            .map(|piece| piece.as_ptr())
+            .collect::<Vec<_>>();
+
+        let status = unsafe {
+            spp_decode_pieces(
+                self.inner,
+                c_pieces.as_ptr(),
+                c_pieces.len() as size_t,
                 &mut decoded,
                 &mut decoded_len,
             )
@@ -389,11 +435,21 @@ mod tests {
     }
 
     #[test]
-    fn decodes_sentence_with_toy_model() {
+    fn decodes_piece_ids_with_toy_model() {
         let model = toy_model().unwrap();
         let decoded = model
             .decode_piece_ids(&[8, 465, 10, 947, 41, 10, 170, 168, 110, 28, 20, 143, 4])
             .unwrap();
+        assert_eq!(decoded, "I saw a girl with a telescope.");
+    }
+
+    #[test]
+    fn decodes_pieces_with_toy_model() {
+        let model = toy_model().unwrap();
+        let pieces = vec![
+            "▁I", "▁saw", "▁a", "▁girl", "▁with", "▁a", "▁t", "el", "es", "c", "o", "pe", ".",
+        ];
+        let decoded = model.decode_pieces(&pieces).unwrap();
         assert_eq!(decoded, "I saw a girl with a telescope.");
     }
 
@@ -404,6 +460,14 @@ mod tests {
             model.decode_piece_ids(&[8, 1000]),
             Err(SentencePieceError::CError(CSentencePieceError::OutOfRange))
         );
+    }
+
+    #[test]
+    #[should_panic]
+    fn decodes_pieces_with_null_fails() {
+        let model = toy_model().unwrap();
+        let pieces = vec!["▁I", "▁s\0aw"];
+        model.decode_pieces(&pieces).unwrap();
     }
 
     #[test]

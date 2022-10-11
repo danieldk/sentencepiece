@@ -46,6 +46,24 @@ int spp_decode_piece_ids(SentencePieceProcessor *spp, uint32_t const *pieces, si
     return to_underlying_type(status.code());
 }
 
+int spp_decode_pieces(SentencePieceProcessor *spp, char const * const *pieces, size_t pieces_len, unsigned char **decoded, size_t *decoded_len) {
+    std::vector<absl::string_view> str_pieces;
+    str_pieces.reserve(pieces_len);
+  
+    for (char const * const *piece = pieces; piece != pieces + pieces_len; ++piece) {
+        str_pieces.push_back(*piece);
+    }
+
+    std::string decoded_string;
+    auto status = spp->Decode(str_pieces, &decoded_string);
+
+    *decoded_len = decoded_string.size();
+    *decoded = static_cast<unsigned char *>(malloc(decoded_string.size()));
+    memcpy(*decoded, decoded_string.data(), decoded_string.size());
+
+    return to_underlying_type(status.code());
+}
+
 unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len) {
   auto sentence_view = absl::string_view(sentence, sentence_len);
   auto serialized = spp->EncodeAsSerializedProto(sentence_view);

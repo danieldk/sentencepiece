@@ -802,6 +802,15 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
+    pub fn spp_decode_pieces(
+        spp: *mut SentencePieceProcessor,
+        pieces: *const *const ::std::os::raw::c_char,
+        pieces_len: size_t,
+        decoded: *mut *mut ::std::os::raw::c_uchar,
+        decoded_len: *mut size_t,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
     pub fn spp_encode_as_serialized_proto(
         spp: *mut SentencePieceProcessor,
         sentence: *const ::std::os::raw::c_char,
