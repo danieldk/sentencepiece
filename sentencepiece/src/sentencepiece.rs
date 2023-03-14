@@ -1,6 +1,6 @@
 use prost_derive::Message;
 
-#[derive(Clone, Eq, PartialEq, Message)]
+#[derive(Clone, PartialEq, Message)]
 pub struct SentencePieceText {
     /// User input or postprocessed text.
     #[prost(string, optional, tag = "1")]
@@ -15,7 +15,7 @@ pub struct SentencePieceText {
     pub score: Option<f32>,
 }
 
-#[derive(Clone, Eq, PartialEq, Message)]
+#[derive(Clone, PartialEq, Message)]
 pub struct SentencePiece {
     /// Internal representation for the decoder.
     #[prost(string, optional, tag = "1")]
