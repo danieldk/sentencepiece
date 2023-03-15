@@ -156,7 +156,7 @@ impl SentencePieceProcessor {
         if result == 0 {
             Ok(spp)
         } else {
-            let c_error = match FromPrimitive::from_i32(result as i32) {
+            let c_error = match FromPrimitive::from_i32(result) {
                 Some(error) => error,
                 None => unreachable!(),
             };
@@ -189,7 +189,7 @@ impl SentencePieceProcessor {
         if result == 0 {
             Ok(spp)
         } else {
-            let c_error = match FromPrimitive::from_i32(result as i32) {
+            let c_error = match FromPrimitive::from_i32(result) {
                 Some(error) => error,
                 None => unreachable!(),
             };
@@ -232,7 +232,7 @@ impl SentencePieceProcessor {
 
             Ok(decoded_string)
         } else {
-            let c_error = match FromPrimitive::from_i32(status as i32) {
+            let c_error = match FromPrimitive::from_i32(status) {
                 Some(error) => error,
                 None => unreachable!(),
             };
@@ -275,7 +275,7 @@ impl SentencePieceProcessor {
 
             Ok(decoded_string)
         } else {
-            let c_error = match FromPrimitive::from_i32(status as i32) {
+            let c_error = match FromPrimitive::from_i32(status) {
                 Some(error) => error,
                 None => unreachable!(),
             };
