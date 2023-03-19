@@ -15,7 +15,7 @@ pub struct SentencePieceText {
     pub score: Option<f32>,
 }
 
-#[derive(Clone, PartialEq, Message)]
+#[derive(Clone, Eq, PartialEq, Message)]
 pub struct SentencePiece {
     /// Internal representation for the decoder.
     #[prost(string, optional, tag = "1")]
