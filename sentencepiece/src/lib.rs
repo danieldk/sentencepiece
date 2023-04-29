@@ -27,7 +27,7 @@ use num_traits::{FromPrimitive, Signed};
 use thiserror::Error;
 
 use sentencepiece_sys::{
-    size_t, spp_bos_id, spp_decode_piece_ids, spp_decode_pieces, spp_encode_as_serialized_proto,
+    spp_bos_id, spp_decode_piece_ids, spp_decode_pieces, spp_encode_as_serialized_proto,
     spp_eos_id, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_pad_id,
     spp_piece_size, spp_piece_to_id, spp_sample_encode_as_serialized_proto,
     spp_to_serialized_proto, spp_unk_id, SentencePieceProcessor as CSentencePieceProcessor,
@@ -111,14 +111,14 @@ pub enum CSentencePieceError {
 /// Small wrapper struct to deallocate data automatically.
 struct CData {
     data: *const u8,
-    len: u64,
+    len: usize,
 }
 
 impl Deref for CData {
     type Target = [u8];
 
     fn deref(&self) -> &Self::Target {
-        unsafe { slice::from_raw_parts(self.data, self.len as usize) }
+        unsafe { slice::from_raw_parts(self.data, self.len) }
     }
 }
 
@@ -150,7 +150,7 @@ impl SentencePieceProcessor {
         };
 
         let result = unsafe {
-            spp_from_serialized_proto(spp.inner, data.as_ptr() as *const c_char, data.len() as u64)
+            spp_from_serialized_proto(spp.inner, data.as_ptr() as *const c_char, data.len())
         };
 
         if result == 0 {
@@ -209,13 +209,13 @@ impl SentencePieceProcessor {
     /// Decode a sentence from piece identifiers.
     pub fn decode_piece_ids(&self, pieces: &[u32]) -> Result<String, SentencePieceError> {
         let mut decoded = std::ptr::null_mut::<u8>();
-        let mut decoded_len: size_t = 0;
+        let mut decoded_len = 0;
 
         let status = unsafe {
             spp_decode_piece_ids(
                 self.inner,
                 pieces.as_ptr(),
-                pieces.len() as size_t,
+                pieces.len(),
                 &mut decoded,
                 &mut decoded_len,
             )
@@ -242,7 +242,7 @@ impl SentencePieceProcessor {
 
     pub fn decode_pieces(&self, pieces: &[impl AsRef<str>]) -> Result<String, SentencePieceError> {
         let mut decoded = std::ptr::null_mut::<u8>();
-        let mut decoded_len: size_t = 0;
+        let mut decoded_len = 0;
 
         let owned_c_pieces = pieces
             .iter()
@@ -258,7 +258,7 @@ impl SentencePieceProcessor {
             spp_decode_pieces(
                 self.inner,
                 c_pieces.as_ptr(),
-                c_pieces.len() as size_t,
+                c_pieces.len(),
                 &mut decoded,
                 &mut decoded_len,
             )
@@ -285,12 +285,12 @@ impl SentencePieceProcessor {
 
     /// Encode a sentence as sentence pieces and their identifiers.
     pub fn encode(&self, sentence: &str) -> Result<Vec<PieceWithId>, SentencePieceError> {
-        let mut len = 0u64;
+        let mut len = 0usize;
         let c_proto = unsafe {
             spp_encode_as_serialized_proto(
                 self.inner,
                 sentence.as_ptr() as *const c_char,
-                sentence.as_bytes().len() as u64,
+                sentence.as_bytes().len(),
                 &mut len,
             )
         };
@@ -390,14 +390,14 @@ impl SentencePieceProcessor {
         assert!(n_best <= 512);
         assert!(alpha.is_normal() && alpha.is_positive());
 
-        let mut len = 0u64;
+        let mut len = 0usize;
         let c_proto = unsafe {
             spp_sample_encode_as_serialized_proto(
                 self.inner,
                 sentence.as_ptr() as *const c_char,
-                sentence.as_bytes().len() as u64,
+                sentence.as_bytes().len(),
                 &mut len,
-                n_best as size_t,
+                n_best,
                 alpha,
             )
         };
