@@ -38,11 +38,15 @@ fn main() {
         build_sentencepiece(&mut builder);
     }
 
-    builder
-        .file("src/ffi/sentencepiece.cpp")
-        .cpp(true)
-        .flag_if_supported("-std=c++17")
-        .compile("sentencepiece_wrap");
+    builder.file("src/ffi/sentencepiece.cpp").cpp(true);
+
+    if builder.get_compiler().is_like_msvc() {
+        builder.flag("/std:c++17");
+    } else {
+        builder.flag("-std=c++17");
+    }
+
+    builder.compile("sentencepiece_wrap");
 
     println!("cargo:rerun-if-changed=src/ffi/sentencepiece.cpp");
 }
