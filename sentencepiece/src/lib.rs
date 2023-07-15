@@ -18,7 +18,6 @@
 use std::ffi::{c_void, CString, NulError};
 use std::ops::{Deref, Drop};
 use std::os::raw::c_char;
-use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
 use std::slice;
 
@@ -62,6 +61,9 @@ pub enum SentencePieceError {
 
     #[error("Filename contains nul: {0}")]
     FilenameContainsNul(PathBuf),
+
+    #[error("Filename is not valid UTF-8: {0}")]
+    FilenameNotUtf8(PathBuf),
 
     #[error("Encoded text did not contain {0}")]
     MissingData(String),
@@ -180,12 +182,22 @@ impl SentencePieceProcessor {
             inner: unsafe { spp_new() },
         };
 
-        // Note: `as_bytes` is not available on Windows. If we port to Windows, check
-        // what the expectations of sentencepiece are.
-        let c_filename = CString::new(path.as_ref().as_os_str().as_bytes())
+        let result;
+        #[cfg(unix)]
+        {
+            use std::os::unix::ffi::OsStrExt;
+            let c_filename = CString::new(path.as_ref().as_os_str().as_bytes())
+                .map_err(|_| SentencePieceError::FilenameContainsNul(path.as_ref().to_owned()))?;
+            result = unsafe { spp_load(spp.inner, c_filename.as_ptr()) };
+        }
+        #[cfg(not(unix))]
+        {
+            let c_filename = CString::new(path.as_ref().to_str().ok_or(
+                SentencePieceError::FilenameNotUtf8(path.as_ref().to_owned()),
+            )?)
             .map_err(|_| SentencePieceError::FilenameContainsNul(path.as_ref().to_owned()))?;
-
-        let result = unsafe { spp_load(spp.inner, c_filename.as_ptr()) };
+            result = unsafe { spp_load(spp.inner, c_filename.as_ptr()) };
+        }
         if result == 0 {
             Ok(spp)
         } else {
