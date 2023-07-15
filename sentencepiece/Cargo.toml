@@ -20,3 +20,5 @@ thiserror = "1"
 
 [features]
 albert-tests = []
+system = ["sentencepiece-sys/system"]
+static = ["sentencepiece-sys/static"]
