@@ -4,17 +4,29 @@ on: [push, pull_request]
 
 jobs:
   without-sentencepiece:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        toolchain:
+          - stable
+        target-features:
+          - "+crt-static"
+          - "-crt-static"
     name: Test without libsentencepiece
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    env:
+      RUSTFLAGS: "-C target-feature=${{ matrix.target-features }}"
     steps:
-      - name: Install cmake and pkg-config
-        run: sudo apt-get install cmake pkg-config
       - uses: actions/checkout@v2
         with:
           submodules: true
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: ${{ matrix.toolchain }}
           override: true
       - uses: actions/cache@v3
         with:
@@ -24,8 +36,13 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          key: ${{ runner.os }}-${{ matrix.toolchain }}-cargo-${{ hashFiles('**/Cargo.toml') }}-${{ matrix.target-features }}
       - uses: actions-rs/cargo@v1
         with:
           command: test
-      - run: scripts/test-all.sh
+      - name: Run tests (Ubuntu/MacOS)
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        run: scripts/test-all.sh
+      - name: Run tests (Windows)
+        if: matrix.os == 'windows-latest'
+        run: scripts/test-all.ps1
