@@ -32,4 +32,4 @@ for index in "${models[@]}"; do
   declare -x "${var}"="${test_dir}/${bn}"
 done
 
-cargo test --features albert-tests
+cargo test --features albert-tests "$@"

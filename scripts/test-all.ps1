@@ -22,4 +22,4 @@ foreach ($var in $models.GetEnumerator()) {
     Set-Item -Path "Env:$($var.Key)" -Value "$test_dir/$bn"
 }
 
-cargo test --features albert-tests
+Invoke-Expression "cargo test --features albert-tests $args"
