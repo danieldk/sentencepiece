@@ -44,7 +44,7 @@ jobs:
           RUSTFLAGS: "-Ctarget-feature=${{ matrix.target-features }}"
         run: scripts/test-all.sh --target x86_64-apple-darwin
       - name: Run tests (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.target-features != '+crt-static'
         env:
           RUSTFLAGS: "-Ctarget-feature=${{ matrix.target-features }}"
         run: scripts/test-all.sh --target x86_64-unknown-linux-gnu
