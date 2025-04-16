@@ -3,7 +3,7 @@
 This Rust crate is a binding for the
 [sentencepiece](https://github.com/google/sentencepiece) unsupervised
 text tokenizer. The [crate
-documentation](https://rustdoc.danieldk.eu/sentencepiece) is available
+documentation](https://docs.rs/sentencepiece/) is available
 online.
 
 ## `libsentencepiece` dependency
