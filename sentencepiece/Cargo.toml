@@ -10,7 +10,7 @@ exclude = ["testdata/albert-base-v1-spiece.model"]
 
 [dependencies]
 libc = "0.2"
-num-derive = "0.3"
+num-derive = "0.4"
 num-traits = "0.2"
 prost = "0.11"
 prost-derive = "0.11"
