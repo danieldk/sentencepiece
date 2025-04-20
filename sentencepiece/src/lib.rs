@@ -302,7 +302,7 @@ impl SentencePieceProcessor {
             spp_encode_as_serialized_proto(
                 self.inner,
                 sentence.as_ptr() as *const c_char,
-                sentence.as_bytes().len(),
+                sentence.len(),
                 &mut len,
             )
         };
@@ -352,7 +352,7 @@ impl SentencePieceProcessor {
 
     fn process_encode_protobuf(c_proto: CData) -> Result<Vec<PieceWithId>, SentencePieceError> {
         // Errors are communicated as empty data.
-        if c_proto.len() == 0 {
+        if c_proto.is_empty() {
             return Err(SentencePieceError::EncodeError);
         }
 
@@ -407,7 +407,7 @@ impl SentencePieceProcessor {
             spp_sample_encode_as_serialized_proto(
                 self.inner,
                 sentence.as_ptr() as *const c_char,
-                sentence.as_bytes().len(),
+                sentence.len(),
                 &mut len,
                 n_best,
                 alpha,
