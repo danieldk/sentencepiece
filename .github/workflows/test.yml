@@ -10,6 +10,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
+          - macos-13
           - macos-latest
         toolchain:
           - stable
@@ -38,11 +39,16 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
-      - name: Run tests (macOS)
-        if: matrix.os == 'macos-latest'
+      - name: Run tests (macOS, Intel)
+        if: matrix.os == 'macos-13'
         env:
           RUSTFLAGS: "-Ctarget-feature=${{ matrix.target-features }}"
         run: scripts/test-all.sh --target x86_64-apple-darwin
+      - name: Run tests (macOS, Apple silicon)
+        if: matrix.os == 'macos-latest'
+        env:
+          RUSTFLAGS: "-Ctarget-feature=${{ matrix.target-features }}"
+        run: scripts/test-all.sh --target aarch64-apple-darwin
       - name: Run tests (Ubuntu)
         if: matrix.os == 'ubuntu-latest' && matrix.target-features != '+crt-static'
         env:
