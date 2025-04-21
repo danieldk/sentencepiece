@@ -27,9 +27,10 @@ use thiserror::Error;
 
 use sentencepiece_sys::{
     spp_bos_id, spp_decode_piece_ids, spp_decode_pieces, spp_encode_as_serialized_proto,
-    spp_eos_id, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new, spp_pad_id,
-    spp_piece_size, spp_piece_to_id, spp_sample_encode_as_serialized_proto,
-    spp_to_serialized_proto, spp_unk_id, SentencePieceProcessor as CSentencePieceProcessor,
+    spp_eos_id, spp_free, spp_from_serialized_proto, spp_is_unknown, spp_load, spp_new,
+    spp_normalize, spp_normalize_with_offsets, spp_pad_id, spp_piece_size, spp_piece_to_id,
+    spp_sample_encode_as_serialized_proto, spp_to_serialized_proto, spp_unk_id,
+    SentencePieceProcessor as CSentencePieceProcessor,
 };
 
 mod sentencepiece;
@@ -111,20 +112,20 @@ pub enum CSentencePieceError {
 }
 
 /// Small wrapper struct to deallocate data automatically.
-struct CData {
-    data: *const u8,
+struct CData<T> {
+    data: *const T,
     len: usize,
 }
 
-impl Deref for CData {
-    type Target = [u8];
+impl<T> Deref for CData<T> {
+    type Target = [T];
 
     fn deref(&self) -> &Self::Target {
         unsafe { slice::from_raw_parts(self.data, self.len) }
     }
 }
 
-impl Drop for CData {
+impl<T> Drop for CData<T> {
     fn drop(&mut self) {
         unsafe { libc::free(self.data as *mut c_void) }
     }
@@ -233,7 +234,7 @@ impl SentencePieceProcessor {
             )
         };
 
-        let c_str = CData {
+        let c_str: CData<u8> = CData {
             data: decoded,
             len: decoded_len,
         };
@@ -276,7 +277,7 @@ impl SentencePieceProcessor {
             )
         };
 
-        let c_str = CData {
+        let c_str: CData<u8> = CData {
             data: decoded,
             len: decoded_len,
         };
@@ -329,6 +330,100 @@ impl SentencePieceProcessor {
         len as usize
     }
 
+    /// Normalize a sentence.
+    ///
+    /// This applies the normalization rules specified in the model.
+    pub fn normalize(&self, sentence: &str) -> Result<String, SentencePieceError> {
+        let mut normalized = std::ptr::null_mut::<u8>();
+        let mut normalized_len = 0;
+
+        let status = unsafe {
+            spp_normalize(
+                self.inner,
+                sentence.as_ptr() as *const c_char,
+                sentence.len(),
+                &mut normalized,
+                &mut normalized_len,
+            )
+        };
+
+        let c_str: CData<u8> = CData {
+            data: normalized,
+            len: normalized_len,
+        };
+
+        if status == 0 {
+            let normalized_string = String::from_utf8(c_str.to_owned())
+                .expect("Normalized sentence is not UTF-8, please report this bug.");
+
+            Ok(normalized_string)
+        } else {
+            let c_error = match FromPrimitive::from_i32(status) {
+                Some(error) => error,
+                None => unreachable!(),
+            };
+            Err(SentencePieceError::CError(c_error))
+        }
+    }
+
+    /// Normalize a sentence.
+    ///
+    /// This applies the normalization rules specified in the model. Returns a
+    /// tuple containing the normalized string and a vector mapping each byte in
+    /// the normalized input to the corresponding byte position in the original
+    /// input.
+    pub fn normalize_with_offsets(
+        &self,
+        sentence: &str,
+    ) -> Result<(String, Vec<usize>), SentencePieceError> {
+        let mut normalized = std::ptr::null_mut::<u8>();
+        let mut normalized_len = 0;
+        let mut offsets = std::ptr::null_mut::<usize>();
+        let mut offsets_len = 0;
+
+        let status = unsafe {
+            spp_normalize_with_offsets(
+                self.inner,
+                sentence.as_ptr() as *const c_char,
+                sentence.len(),
+                &mut normalized,
+                &mut normalized_len,
+                &mut offsets,
+                &mut offsets_len,
+            )
+        };
+
+        // Create wrapper structs for the allocated memory to manage their lifetimes
+        let c_normalized: CData<u8> = CData {
+            data: normalized,
+            len: normalized_len,
+        };
+
+        // Create a scope to ensure c_offsets is dropped after we're done with it
+
+        {
+            let c_offsets: CData<usize> = CData {
+                data: offsets,
+                len: offsets_len,
+            };
+
+            if status == 0 {
+                let normalized_string = String::from_utf8(c_normalized.to_owned())
+                    .expect("Normalized sentence is not UTF-8, please report this bug.");
+
+                let offsets_vec = c_offsets.to_vec();
+
+                Ok((normalized_string, offsets_vec))
+            } else {
+                let c_error = match FromPrimitive::from_i32(status) {
+                    Some(error) => error,
+                    None => unreachable!(),
+                };
+                Err(SentencePieceError::CError(c_error))
+            }
+        }
+    }
+
     pub fn pad_id(&self) -> Option<u32> {
         let pad_id = unsafe { spp_pad_id(self.inner) };
         if pad_id < 0 {
@@ -350,7 +445,7 @@ impl SentencePieceProcessor {
         }
     }
 
-    fn process_encode_protobuf(c_proto: CData) -> Result<Vec<PieceWithId>, SentencePieceError> {
+    fn process_encode_protobuf(c_proto: CData<u8>) -> Result<Vec<PieceWithId>, SentencePieceError> {
         // Errors are communicated as empty data.
         if c_proto.is_empty() {
             return Err(SentencePieceError::EncodeError);
@@ -696,6 +791,29 @@ mod tests {
         let spp = SentencePieceProcessor::from_serialized_proto(protobuf).unwrap();
         let protobuf_roundtrip = spp.to_serialized_proto();
         assert_eq!(protobuf, protobuf_roundtrip);
+    }
+
+    #[test]
+    fn normalizes_sentence_with_toy_model() {
+        let model = toy_model().unwrap();
+        assert_eq!(
+            model.normalize("ＫＡＤＯＫＡＷＡ   ABC ").unwrap(),
+            "▁KADOKAWA▁ABC"
+        );
+    }
+
+    #[test]
+    fn test_normalize_with_offsets() {
+        let spp = SentencePieceProcessor::open("testdata/toy.model").unwrap();
+
+        let (normalized, offsets) = spp
+            .normalize_with_offsets("ＫＡＤＯＫＡＷＡ   ABC ")
+            .unwrap();
+        assert_eq!(normalized, "▁KADOKAWA▁ABC");
+        assert_eq!(
+            offsets,
+            vec![0, 0, 0, 0, 3, 6, 9, 12, 15, 18, 21, 24, 24, 24, 27, 28, 29, 30]
+        );
     }
 }
 

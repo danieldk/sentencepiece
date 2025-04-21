@@ -151,3 +151,23 @@ extern "C" {
 extern "C" {
     pub fn spp_unk_id(spp: *mut SentencePieceProcessor) -> ::std::os::raw::c_int;
 }
+extern "C" {
+    pub fn spp_normalize(
+        spp: *mut SentencePieceProcessor,
+        sentence: *const ::std::os::raw::c_char,
+        sentence_len: usize,
+        normalized: *mut *mut ::std::os::raw::c_uchar,
+        normalized_len: *mut usize,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn spp_normalize_with_offsets(
+        spp: *mut SentencePieceProcessor,
+        sentence: *const ::std::os::raw::c_char,
+        sentence_len: usize,
+        normalized: *mut *mut ::std::os::raw::c_uchar,
+        normalized_len: *mut usize,
+        offsets: *mut *mut usize,
+        offsets_len: *mut usize,
+    ) -> ::std::os::raw::c_int;
+}
