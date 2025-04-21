@@ -75,7 +75,6 @@ unsigned char *spp_encode_as_serialized_proto(SentencePieceProcessor *spp, char 
   return data;
 }
 
-
 unsigned char *spp_sample_encode_as_serialized_proto(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, size_t *len, size_t nbest, float alpha) {
   auto sentence_view = absl::string_view(sentence, sentence_len);
   auto serialized = spp->SampleEncodeAsSerializedProto(sentence_view, static_cast<int>(nbest), alpha);
@@ -85,6 +84,66 @@ unsigned char *spp_sample_encode_as_serialized_proto(SentencePieceProcessor *spp
   memcpy(data, serialized.data(), serialized.size());
 
   return data;
+}
+
+int spp_normalize(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, unsigned char **normalized, size_t *normalized_len) {
+  auto sentence_view = absl::string_view(sentence, sentence_len);
+  std::string normalized_str;
+  auto status = spp->Normalize(sentence_view, &normalized_str);
+
+  if (!status.ok()) {
+    *normalized = nullptr;
+    *normalized_len = 0;
+    return to_underlying_type(status.code());
+  }
+
+  *normalized_len = normalized_str.size();
+  *normalized = (unsigned char *) malloc(normalized_str.size());
+  memcpy(*normalized, normalized_str.data(), normalized_str.size());
+
+  return to_underlying_type(status.code());
+}
+
+int spp_normalize_with_offsets(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, unsigned char **normalized, size_t *normalized_len, size_t **offsets, size_t *offsets_len) {
+  auto sentence_view = absl::string_view(sentence, sentence_len);
+  std::string normalized_str;
+  std::vector<size_t> norm_to_orig_vec;
+  auto status = spp->Normalize(sentence_view, &normalized_str, &norm_to_orig_vec);
+
+  if (!status.ok()) {
+    *normalized = nullptr;
+    *normalized_len = 0;
+    *offsets = nullptr;
+    *offsets_len = 0;
+    return to_underlying_type(status.code());
+  }
+
+  // Allocate and copy normalized string
+  *normalized_len = normalized_str.size();
+  *normalized = (unsigned char *) malloc(normalized_str.size());
+   if (*normalized == nullptr && normalized_str.size() > 0) {
+      // Allocation failed
+      *normalized_len = 0;
+      *offsets = nullptr;
+      *offsets_len = 0;
+      return to_underlying_type(sentencepiece::util::StatusCode::kResourceExhausted);
+  }
+  memcpy(*normalized, normalized_str.data(), normalized_str.size());
+
+  // Allocate and copy offsets
+  *offsets_len = norm_to_orig_vec.size();
+  *offsets = (size_t *) malloc(norm_to_orig_vec.size() * sizeof(size_t));
+  if (*offsets == nullptr && norm_to_orig_vec.size() > 0) {
+      // Allocation failed - free the already allocated normalized string
+      free(*normalized);
+      *normalized = nullptr;
+      *normalized_len = 0;
+      *offsets_len = 0;
+      return to_underlying_type(sentencepiece::util::StatusCode::kResourceExhausted);
+  }
+  memcpy(*offsets, norm_to_orig_vec.data(), norm_to_orig_vec.size() * sizeof(size_t));
+
+  return to_underlying_type(status.code());
 }
 
 int spp_eos_id(SentencePieceProcessor *spp) {

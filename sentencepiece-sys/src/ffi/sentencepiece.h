@@ -42,6 +42,8 @@ int spp_piece_size(SentencePieceProcessor *spp);
 
 int spp_unk_id(SentencePieceProcessor *spp);
 
+int spp_normalize(SentencePieceProcessor *spp, char const *sentence, size_t sentence_len, unsigned char **normalized, size_t *normalized_len);
+
 #ifdef __cplusplus
 }
 #endif
