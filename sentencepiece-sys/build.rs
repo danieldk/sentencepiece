@@ -7,7 +7,7 @@ macro_rules! feature(($name:expr) => (env::var(concat!("CARGO_FEATURE_", $name))
 
 fn build_sentencepiece(builder: &mut Build) {
     let mut config = Config::new("source");
-    config.define("CMAKE_POLICY_VERSION_MINIMUM", "3.5");
+    config.define("CMAKE_POLICY_VERSION_MINIMUM", "3.10");
     if builder.get_compiler().is_like_msvc() {
         config.profile("Release");
         if env::var("CARGO_CFG_TARGET_FEATURE")
