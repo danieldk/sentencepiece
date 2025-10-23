@@ -21,12 +21,11 @@ fn build_sentencepiece(builder: &mut Build) {
             config.define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded");
             config.static_crt(true);
         }
-    } else {
-        if is_static_crt {
-            config.define("SPM_ENABLE_SHARED", "OFF");
-            config.define("SPM_BUILD_SHARED_LIBS", "OFF");
-        }
+    } else if is_static_crt {
+        config.define("SPM_ENABLE_SHARED", "OFF");
+        config.define("SPM_BUILD_SHARED_LIBS", "OFF");
     }
+
     let dst = config.build();
     println!(
         "cargo:rustc-link-search=native={}",
