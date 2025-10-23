@@ -8,16 +8,23 @@ macro_rules! feature(($name:expr) => (env::var(concat!("CARGO_FEATURE_", $name))
 fn build_sentencepiece(builder: &mut Build) {
     let mut config = Config::new("source");
     config.define("CMAKE_POLICY_VERSION_MINIMUM", "3.10");
+
+    let is_static_crt = env::var("CARGO_CFG_TARGET_FEATURE")
+        .unwrap_or_default()
+        .contains("crt-static");
+
     if builder.get_compiler().is_like_msvc() {
         config.profile("Release");
-        if env::var("CARGO_CFG_TARGET_FEATURE")
-            .unwrap_or_default()
-            .contains("crt-static")
-        {
+        if is_static_crt {
             config.define("SPM_ENABLE_MSVC_MT_BUILD", "ON");
             config.define("MSVC_RUNTIME_LIBRARY", "MultiThreaded");
             config.define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded");
             config.static_crt(true);
+        }
+    } else {
+        if is_static_crt {
+            config.define("SPM_ENABLE_SHARED", "OFF");
+            config.define("SPM_BUILD_SHARED_LIBS", "OFF");
         }
     }
     let dst = config.build();
