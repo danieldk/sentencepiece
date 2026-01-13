@@ -1,5 +1,0 @@
-consolidate-commits = true
-shared-version = true
-pre-release-commit-message = "Bump version to {{version}}"
-tag-message = ""
-tag-prefix = ""

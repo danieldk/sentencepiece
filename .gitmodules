@@ -1,3 +1,0 @@
-[submodule "sentencepiece-sys/source"]
-	path = sentencepiece-sys/source
-	url = https://github.com/google/sentencepiece.git
