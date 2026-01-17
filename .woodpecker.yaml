@@ -1,0 +1,32 @@
+steps:
+  cargo_fmt:
+    when:
+      event: pull_request
+    image: rust
+    commands:
+      - rustup default stable
+      - rustup component add rustfmt
+      - cargo fmt -- --check
+
+  cargo_clippy:
+    image: rust
+    when:
+      - event: pull_request
+    commands:
+      - rustup default stable
+      - rustup component add clippy
+      - apt update && apt install -y cmake
+      - cargo clippy --tests --all-targets -- -D warnings
+
+  cargo_test:
+    image: rust
+    when:
+      - event: pull_request
+    matrix:
+      CRT_STATIC: ["+crt-static", "-crt-static"]
+    commands:
+      - rustup default stable
+      - apt update && apt install -y cmake
+      - export RUSTFLAGS="-C target-feature=$CRT_STATIC"
+      - echo "Testing with crt-static=$CRT_STATIC"
+      - cargo test
