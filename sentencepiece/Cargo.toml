@@ -1,10 +1,11 @@
 [package]
 name = "sentencepiece"
-version = "0.13.0"
+version = "0.13.1"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
-repository = "https://github.com/danieldk/sentencepiece.git"
+repository = "https://codeberg.org/danieldk/sentencepiece.git"
+homepage = "https://codeberg.org/danieldk/sentencepiece"
 license = "MIT OR Apache-2.0"
 exclude = ["testdata/albert-base-v1-spiece.model"]
 
@@ -14,7 +15,7 @@ num-derive = "0.4"
 num-traits = "0.2"
 prost = "0.14"
 prost-derive = "0.14"
-sentencepiece-sys = { path = "../sentencepiece-sys", version = "0.13.0" }
+sentencepiece-sys = { path = "../sentencepiece-sys", version = "0.13.1" }
 thiserror = "2"
 
 [features]

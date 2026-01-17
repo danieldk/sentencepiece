@@ -1,10 +1,11 @@
 [package]
 name = "sentencepiece-sys"
-version = "0.13.0"
+version = "0.13.1"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
-repository = "https://github.com/danieldk/sentencepiece.git"
+repository = "https://codeberg.org/danieldk/sentencepiece.git"
+homepage = "https://codeberg.org/danieldk/sentencepiece"
 license = "Apache-2.0"
 
 exclude = ["source/data", "source/doc", "source/python", "source/tensorflow"]
