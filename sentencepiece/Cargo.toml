@@ -4,8 +4,8 @@ version = "0.13.1"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
 description = "Binding for the sentencepiece tokenizer"
-repository = "https://codeberg.org/danieldk/sentencepiece.git"
-homepage = "https://codeberg.org/danieldk/sentencepiece"
+repository = "https://github.com/danieldk/sentencepiece.git"
+homepage = "https://github.com/danieldk/sentencepiece"
 license = "MIT OR Apache-2.0"
 exclude = ["testdata/albert-base-v1-spiece.model"]
 
