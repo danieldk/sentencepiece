@@ -98,7 +98,7 @@ extern "C" {
         sentence: *const ::std::os::raw::c_char,
         sentence_len: usize,
         len: *mut usize,
-        nbest: usize,
+        nbest: ::std::os::raw::c_int,
         alpha: f32,
     ) -> *mut ::std::os::raw::c_uchar;
 }

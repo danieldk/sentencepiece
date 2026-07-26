@@ -17,7 +17,7 @@
 
 use std::ffi::{c_void, CString, NulError};
 use std::ops::{Deref, Drop};
-use std::os::raw::c_char;
+use std::os::raw::{c_char, c_int};
 use std::path::{Path, PathBuf};
 use std::slice;
 
@@ -486,12 +486,16 @@ impl SentencePieceProcessor {
     /// Sample for the `n_best` segmentations, where alpha controls the
     /// smoothness of the distribution.
     ///
+    /// When `n_best` is negative (e.g., `-1`), one segmentation is sampled
+    /// from the hypotheses according to the generation probabilities and using
+    /// forward-filtering and backward-sampling algorithms.
+    ///
     /// This method panics when `n_best > 512` or when alpha is not a (normal)
     /// positive floating point number.
     pub fn sample_encode(
         &self,
         sentence: &str,
-        n_best: usize,
+        n_best: isize,
         alpha: f32,
     ) -> Result<Vec<PieceWithId>, SentencePieceError> {
         assert!(n_best <= 512);
@@ -504,7 +508,7 @@ impl SentencePieceProcessor {
                 sentence.as_ptr() as *const c_char,
                 sentence.len(),
                 &mut len,
-                n_best,
+                n_best as c_int,
                 alpha,
             )
         };
@@ -683,6 +687,21 @@ mod tests {
         model
             .sample_encode("I saw a girl with a telescope.", 513, 0.1)
             .unwrap();
+    }
+
+    #[test]
+    fn sample_encode_with_negative_n_best() {
+        let model = toy_model().unwrap();
+        let pieces = model
+            .sample_encode("I saw a girl with a telescope.", -1, 0.5)
+            .unwrap();
+        // Since sampling is randomized, we cannot check the output,
+        // instead check that we can decode the result.
+        let pieces = pieces.iter().map(|p| p.id).collect::<Vec<_>>();
+        assert_eq!(
+            model.decode_piece_ids(&pieces).unwrap(),
+            "I saw a girl with a telescope."
+        );
     }
 
     #[test]
