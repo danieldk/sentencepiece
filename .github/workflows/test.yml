@@ -46,3 +46,14 @@ jobs:
           RUSTFLAGS: "-Ctarget-feature=${{ matrix.target-features }}"
         if: matrix.os == 'windows-latest'
         run: scripts/test-all.ps1 --target x86_64-pc-windows-msvc
+
+  without-sentencepiece-status:
+    name: Test without libsentencepiece
+    needs: without-sentencepiece
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check test results
+        if: needs.without-sentencepiece.result != 'success'
+        run: exit 1
+      - run: echo "All tests passed"
